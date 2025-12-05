@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+import '../models/habit.dart';
+import '../services/habit_storage.dart';
+
+class AddHabitScreen extends StatefulWidget {
+  const AddHabitScreen({super.key});
+
+  @override
+  State<AddHabitScreen> createState() => _AddHabitScreenState();
+}
+
+class _AddHabitScreenState extends State<AddHabitScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final HabitStorage _storage = HabitStorage();
+  String _selectedInterval = 'daily';
+
+  final List<Map<String, String>> _intervals = [
+    {'value': 'daily', 'label': 'Daily'},
+    {'value': 'weekly', 'label': 'Weekly'},
+    {'value': 'monthly', 'label': 'Monthly'},
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveHabit() async {
+    if (_formKey.currentState!.validate()) {
+      final habit = Habit(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text.trim(),
+        interval: _selectedInterval,
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await _storage.addHabit(habit);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Add New Habit'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Habit Name',
+                  hintText: 'e.g., Exercise, Read, Meditate',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a habit name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Interval',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ..._intervals.map((interval) {
+                return RadioListTile<String>(
+                  title: Text(interval['label']!),
+                  value: interval['value']!,
+                  groupValue: _selectedInterval,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedInterval = value!;
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                );
+              }),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _saveHabit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'Save Habit',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
