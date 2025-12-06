@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -68,7 +69,8 @@ class AuthService {
         photoURL: firebaseUser.photoURL,
       );
     } catch (e) {
-      print('Error signing in with Google: $e');
+      // Log error for debugging
+      debugPrint('Error signing in with Google: $e');
       return null;
     }
   }
@@ -87,7 +89,7 @@ class AuthService {
       // Create an OAuth credential from the Apple ID credential
       final oauthCredential = firebase_auth.OAuthProvider("apple.com").credential(
         idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
+        rawNonce: appleCredential.identityToken,
       );
 
       // Sign in to Firebase with the Apple credential
@@ -112,7 +114,8 @@ class AuthService {
         photoURL: firebaseUser.photoURL,
       );
     } catch (e) {
-      print('Error signing in with Apple: $e');
+      // Log error for debugging
+      debugPrint('Error signing in with Apple: $e');
       return null;
     }
   }
@@ -125,12 +128,13 @@ class AuthService {
         _googleSignIn.signOut(),
       ]);
     } catch (e) {
-      print('Error signing out: $e');
+      // Log error for debugging
+      debugPrint('Error signing out: $e');
     }
   }
 
   // Check if Apple Sign In is available (iOS 13+ or macOS 10.15+)
-  Future<bool> get isAppleSignInAvailable async {
+  Future<bool> checkAppleSignInAvailability() async {
     if (!Platform.isIOS && !Platform.isMacOS) {
       return false;
     }

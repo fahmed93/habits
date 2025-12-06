@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _checkAppleSignInAvailability() async {
-    final isAvailable = await _authService.isAppleSignInAvailable;
+    final isAvailable = await _authService.checkAppleSignInAvailability();
     setState(() {
       _isAppleSignInAvailable = isAvailable;
     });
@@ -124,14 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 56,
                         child: ElevatedButton.icon(
                           onPressed: _signInWithGoogle,
-                          icon: Image.asset(
-                            'assets/google_logo.png',
-                            height: 24,
-                            width: 24,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.g_mobiledata, size: 24);
-                            },
-                          ),
+                          icon: const Icon(Icons.login, size: 24),
                           label: const Text('Continue with Google'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
