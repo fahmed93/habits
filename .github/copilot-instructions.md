@@ -16,7 +16,15 @@ lib/
 ├── services/       # Storage/business logic (HabitStorage)
 ├── screens/        # Full-page StatefulWidgets
 └── widgets/        # Reusable UI components
+
+docs/               # All documentation files (*.md) except README.md
 ```
+
+## Documentation Guidelines
+- **All documentation files must be placed in the `docs/` folder**
+- Only `README.md` stays at the project root
+- Use relative links between docs (e.g., `[FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)`)
+- From README.md, link to docs with `docs/` prefix (e.g., `[docs/AUTH_README.md](docs/AUTH_README.md)`)
 
 ## Key Patterns
 

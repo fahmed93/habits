@@ -1,0 +1,46 @@
+{
+  "_comment": "This is a placeholder google-services.json file.",
+  "_instructions": [
+    "To enable Firebase authentication, you need to:",
+    "1. Go to https://console.firebase.google.com/",
+    "2. Create a new project or select an existing one",
+    "3. Add an Android app with package name: com.example.habits",
+    "4. Download the google-services.json file",
+    "5. Replace this file with your downloaded google-services.json",
+    "6. For Google Sign-In: Enable it in Firebase Console > Authentication > Sign-in method",
+    "7. Add SHA-1 certificate fingerprint in Firebase Console > Project Settings > Your apps",
+    "8. For Apple Sign-In: Enable it in Firebase Console > Authentication > Sign-in method"
+  ],
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "your-project-id",
+    "storage_bucket": "your-project-id.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+        "android_client_info": {
+          "package_name": "com.example.habits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

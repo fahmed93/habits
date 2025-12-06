@@ -4,19 +4,24 @@ import '../models/habit.dart';
 
 class HabitStorage {
   static const String _habitsKey = 'habits';
+  final String? userId;
+
+  HabitStorage({this.userId});
+
+  String get _storageKey => userId != null ? 'habits_$userId' : _habitsKey;
 
   // Save habits to local storage
   Future<void> saveHabits(List<Habit> habits) async {
     final prefs = await SharedPreferences.getInstance();
     final habitsJson = habits.map((habit) => habit.toJson()).toList();
-    await prefs.setString(_habitsKey, jsonEncode(habitsJson));
+    await prefs.setString(_storageKey, jsonEncode(habitsJson));
   }
 
   // Load habits from local storage
   Future<List<Habit>> loadHabits() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final habitsString = prefs.getString(_habitsKey);
+      final habitsString = prefs.getString(_storageKey);
       
       if (habitsString == null) {
         return [];
