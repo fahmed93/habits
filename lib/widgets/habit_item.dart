@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
+import '../services/time_service.dart';
 
 class HabitItem extends StatelessWidget {
   final Habit habit;
@@ -14,7 +15,7 @@ class HabitItem extends StatelessWidget {
   });
 
   bool _isCompletedToday() {
-    final now = DateTime.now();
+    final now = TimeService().now();
     final today = DateTime(now.year, now.month, now.day);
     return habit.completions.any((date) =>
         date.year == today.year &&
@@ -42,7 +43,7 @@ class HabitItem extends StatelessWidget {
       ..sort((a, b) => b.compareTo(a));
 
     int streak = 0;
-    final now = DateTime.now();
+    final now = TimeService().now();
     DateTime checkDate = DateTime(now.year, now.month, now.day);
 
     for (var completion in sortedCompletions) {

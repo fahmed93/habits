@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/habit.dart';
 import '../services/habit_storage.dart';
+import '../services/time_service.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
 
@@ -13,13 +15,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HabitStorage _storage = HabitStorage();
+  final TimeService _timeService = TimeService();
   List<Habit> _habits = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadHabits();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    await _timeService.loadOffset();
+    await _loadHabits();
   }
 
   Future<void> _loadHabits() async {
@@ -32,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _toggleCompletion(Habit habit) async {
-    final now = DateTime.now();
+    final now = _timeService.now();
     final today = DateTime(now.year, now.month, now.day);
     
     final completions = List<DateTime>.from(habit.completions);
@@ -55,6 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadHabits();
   }
 
+  Future<void> _add24Hours() async {
+    await _timeService.addHours(24);
+    setState(() {
+      // Trigger rebuild to show new date
+    });
+  }
+
   Future<void> _deleteHabit(String habitId) async {
     await _storage.deleteHabit(habitId);
     await _loadHabits();
@@ -72,10 +87,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final now = _timeService.now();
+    final dateFormat = DateFormat('EEEE, MMMM d, y');
+    final formattedDate = dateFormat.format(now);
+    final timeOffset = _timeService.offsetHours;
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Habit Tracker'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Habit Tracker'),
+            Text(
+              timeOffset > 0 
+                  ? '$formattedDate (+${timeOffset}h)' 
+                  : formattedDate,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.access_time),
+            tooltip: '+24 hours',
+            onPressed: _add24Hours,
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
