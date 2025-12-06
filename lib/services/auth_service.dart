@@ -6,14 +6,20 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../models/user.dart' as models;
 
 class AuthService {
-  final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final firebase_auth.FirebaseAuth _firebaseAuth =
+      firebase_auth.FirebaseAuth.instance;
+  GoogleSignIn? _googleSignIn;
+
+  GoogleSignIn get _getGoogleSignIn {
+    _googleSignIn ??= GoogleSignIn();
+    return _googleSignIn!;
+  }
 
   // Get current user
   models.User? get currentUser {
     final firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser == null) return null;
-    
+
     return models.User(
       uid: firebaseUser.uid,
       email: firebaseUser.email,
@@ -39,15 +45,16 @@ class AuthService {
   Future<models.User?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+      final GoogleSignInAccount? googleUser = await _getGoogleSignIn.signIn();
+
       if (googleUser == null) {
         // The user canceled the sign-in
         return null;
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = firebase_auth.GoogleAuthProvider.credential(
@@ -56,7 +63,7 @@ class AuthService {
       );
 
       // Sign in to Firebase with the Google credential
-      final firebase_auth.UserCredential userCredential = 
+      final firebase_auth.UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(credential);
 
       final firebaseUser = userCredential.user;
@@ -78,7 +85,27 @@ class AuthService {
   // Sign in with Apple
   Future<models.User?> signInWithApple() async {
     try {
-      // Request Apple ID credential
+      // For web, use Firebase's built-in Apple auth provider with popup
+      if (kIsWeb) {
+        final provider = firebase_auth.OAuthProvider("apple.com");
+        provider.addScope('email');
+        provider.addScope('name');
+
+        final firebase_auth.UserCredential userCredential =
+            await _firebaseAuth.signInWithPopup(provider);
+
+        final firebaseUser = userCredential.user;
+        if (firebaseUser == null) return null;
+
+        return models.User(
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+        );
+      }
+
+      // For native platforms (iOS/macOS), use sign_in_with_apple package
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -87,21 +114,25 @@ class AuthService {
       );
 
       // Create an OAuth credential from the Apple ID credential
-      final oauthCredential = firebase_auth.OAuthProvider("apple.com").credential(
+      final oauthCredential =
+          firebase_auth.OAuthProvider("apple.com").credential(
         idToken: appleCredential.identityToken,
         rawNonce: appleCredential.identityToken,
       );
 
       // Sign in to Firebase with the Apple credential
-      final firebase_auth.UserCredential userCredential = 
+      final firebase_auth.UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(oauthCredential);
 
       final firebaseUser = userCredential.user;
       if (firebaseUser == null) return null;
 
       // Update display name if available from Apple
-      if (appleCredential.givenName != null || appleCredential.familyName != null) {
-        final displayName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+      if (appleCredential.givenName != null ||
+          appleCredential.familyName != null) {
+        final displayName =
+            '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'
+                .trim();
         if (displayName.isNotEmpty && firebaseUser.displayName == null) {
           await firebaseUser.updateDisplayName(displayName);
         }
@@ -123,21 +154,30 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await _firebaseAuth.signOut();
+      if (_googleSignIn != null) {
+        await _googleSignIn!.signOut();
+      }
     } catch (e) {
       // Log error for debugging
       debugPrint('Error signing out: $e');
     }
   }
 
-  // Check if Apple Sign In is available (iOS 13+ or macOS 10.15+)
+  // Check if Apple Sign In is available (iOS 13+, macOS 10.15+, or web)
   Future<bool> checkAppleSignInAvailability() async {
-    if (!Platform.isIOS && !Platform.isMacOS) {
+    // Apple Sign-In is available on web via Firebase
+    if (kIsWeb) {
+      return true;
+    }
+    // Use try-catch to handle platforms where Platform is not available
+    try {
+      if (!Platform.isIOS && !Platform.isMacOS) {
+        return false;
+      }
+      return await SignInWithApple.isAvailable();
+    } catch (e) {
       return false;
     }
-    return await SignInWithApple.isAvailable();
   }
 }

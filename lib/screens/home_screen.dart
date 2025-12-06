@@ -10,7 +10,7 @@ import 'add_habit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
-  
+
   const HomeScreen({super.key, required this.userId});
 
   @override
@@ -84,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _navigateToAddHabit() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddHabitScreen()),
+      MaterialPageRoute(
+          builder: (context) => AddHabitScreen(userId: widget.userId)),
     );
     if (result == true) {
       await _loadHabits();

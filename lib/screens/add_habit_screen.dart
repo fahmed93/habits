@@ -3,7 +3,9 @@ import '../models/habit.dart';
 import '../services/habit_storage.dart';
 
 class AddHabitScreen extends StatefulWidget {
-  const AddHabitScreen({super.key});
+  final String userId;
+
+  const AddHabitScreen({super.key, required this.userId});
 
   @override
   State<AddHabitScreen> createState() => _AddHabitScreenState();
@@ -12,9 +14,15 @@ class AddHabitScreen extends StatefulWidget {
 class _AddHabitScreenState extends State<AddHabitScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final HabitStorage _storage = HabitStorage();
+  late final HabitStorage _storage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
+
+  @override
+  void initState() {
+    super.initState();
+    _storage = HabitStorage(userId: widget.userId);
+  }
 
   final List<Map<String, String>> _intervals = [
     {'value': 'daily', 'label': 'Daily'},
@@ -83,19 +91,23 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              ..._intervals.map((interval) {
-                return RadioListTile<String>(
-                  title: Text(interval['label']!),
-                  value: interval['value']!,
-                  groupValue: _selectedInterval,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedInterval = value!;
-                    });
-                  },
-                  contentPadding: EdgeInsets.zero,
-                );
-              }),
+              RadioGroup<String>(
+                groupValue: _selectedInterval,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedInterval = value!;
+                  });
+                },
+                child: Column(
+                  children: _intervals.map((interval) {
+                    return RadioListTile<String>(
+                      title: Text(interval['label']!),
+                      value: interval['value']!,
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(height: 24),
               const Text(
                 'Color',
@@ -131,7 +143,8 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: Color(colorValue).withOpacity(0.4),
+                                  color:
+                                      Color(colorValue).withValues(alpha: 0.4),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 )

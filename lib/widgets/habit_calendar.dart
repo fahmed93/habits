@@ -237,7 +237,7 @@ class _CalendarDay extends StatelessWidget {
           ? ''
           : completionCount == 0
               ? 'No completions'
-              : '${completedHabits.map((h) => h.name).join(", ")}',
+              : completedHabits.map((h) => h.name).join(", "),
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
@@ -264,7 +264,7 @@ class _CalendarDay extends StatelessWidget {
                     ? Theme.of(context)
                         .colorScheme
                         .onSurfaceVariant
-                        .withOpacity(0.5)
+                        .withValues(alpha: 0.5)
                     : Theme.of(context).colorScheme.onSurface,
               ),
             ),

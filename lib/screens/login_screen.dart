@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'home_screen.dart'; // Import HomeScreen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -159,6 +160,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ],
+                      // Skip Sign In Button
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const _GuestHomeScreenLauncher(),
+                              ),
+                            );
+                          },
+                          child: const Text('Skip Sign In'),
+                        ),
+                      ),
                     ],
                   ),
                 
@@ -178,5 +195,16 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+}
+
+// Widget to launch HomeScreen in guest mode
+class _GuestHomeScreenLauncher extends StatelessWidget {
+  const _GuestHomeScreenLauncher();
+
+  @override
+  Widget build(BuildContext context) {
+    // Use a special userId for guest mode
+    return const HomeScreen(userId: 'guest');
   }
 }

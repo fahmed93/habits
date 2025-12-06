@@ -24,7 +24,7 @@ A mobile habit tracker app built with Flutter with Firebase Authentication.
 
 1. Clone the repository
 2. Run `flutter pub get` to install dependencies
-3. **Set up Firebase Authentication** - See [AUTH_README.md](AUTH_README.md) for detailed instructions
+3. **Set up Firebase Authentication** - See [docs/AUTH_README.md](docs/AUTH_README.md) for detailed instructions
 4. Configure Firebase for your platform:
    - Android: Add `google-services.json` to `android/app/`
    - iOS: Add `GoogleService-Info.plist` to `ios/Runner/`
@@ -42,7 +42,7 @@ dart pub global activate flutterfire_cli
 flutterfire configure
 ```
 
-See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed setup instructions.
+See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for detailed setup instructions.
 
 ## Project Structure
 
@@ -84,5 +84,5 @@ This app uses Firebase Authentication with support for:
 Each user's habits are stored locally but scoped to their user ID, ensuring data privacy and separation.
 
 For complete authentication setup and configuration instructions, see:
-- [AUTH_README.md](AUTH_README.md) - Complete authentication guide
-- [FIREBASE_SETUP.md](FIREBASE_SETUP.md) - Detailed Firebase setup instructions
+- [docs/AUTH_README.md](docs/AUTH_README.md) - Complete authentication guide
+- [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) - Detailed Firebase setup instructions
