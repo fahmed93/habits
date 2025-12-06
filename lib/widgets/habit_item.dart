@@ -130,7 +130,7 @@ class HabitItem extends StatelessWidget {
               Text(_getIntervalDisplay()),
               if (streak > 0)
                 Text(
-                  '$streak day streak 🔥',
+                  '$streak ${habit.interval == 'daily' ? 'day' : habit.interval == 'weekly' ? 'week' : 'month'} streak 🔥',
                   style: const TextStyle(
                     color: Colors.orange,
                     fontWeight: FontWeight.w500,

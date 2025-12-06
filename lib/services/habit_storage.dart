@@ -14,15 +14,20 @@ class HabitStorage {
 
   // Load habits from local storage
   Future<List<Habit>> loadHabits() async {
-    final prefs = await SharedPreferences.getInstance();
-    final habitsString = prefs.getString(_habitsKey);
-    
-    if (habitsString == null) {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final habitsString = prefs.getString(_habitsKey);
+      
+      if (habitsString == null) {
+        return [];
+      }
+
+      final List<dynamic> habitsJson = jsonDecode(habitsString);
+      return habitsJson.map((json) => Habit.fromJson(json)).toList();
+    } catch (e) {
+      // Return empty list if data is corrupted
       return [];
     }
-
-    final List<dynamic> habitsJson = jsonDecode(habitsString);
-    return habitsJson.map((json) => Habit.fromJson(json)).toList();
   }
 
   // Add a new habit
