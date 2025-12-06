@@ -14,6 +14,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   final _nameController = TextEditingController();
   final HabitStorage _storage = HabitStorage();
   String _selectedInterval = 'daily';
+  int _selectedColor = Habit.habitColors[0];
 
   final List<Map<String, String>> _intervals = [
     {'value': 'daily', 'label': 'Daily'},
@@ -35,6 +36,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         interval: _selectedInterval,
         createdAt: DateTime.now(),
         completions: [],
+        colorValue: _selectedColor,
       );
 
       await _storage.addHabit(habit);
@@ -94,6 +96,59 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   contentPadding: EdgeInsets.zero,
                 );
               }),
+              const SizedBox(height: 24),
+              const Text(
+                'Color',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: Habit.habitColors.map((colorValue) {
+                  final isSelected = _selectedColor == colorValue;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedColor = colorValue;
+                      });
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Color(colorValue),
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 3,
+                              )
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: Color(colorValue).withOpacity(0.4),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 20,
+                            )
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
               const Spacer(),
               ElevatedButton(
                 onPressed: _saveHabit,

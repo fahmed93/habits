@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/habit.dart';
 import '../services/habit_storage.dart';
 import '../services/time_service.dart';
+import '../widgets/habit_calendar.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
 
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _toggleCompletion(Habit habit) async {
     final now = _timeService.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     final completions = List<DateTime>.from(habit.completions);
     final isCompletedToday = completions.any((date) =>
         date.year == today.year &&
@@ -91,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final dateFormat = DateFormat('EEEE, MMMM d, y');
     final formattedDate = dateFormat.format(now);
     final timeOffset = _timeService.offsetHours;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -100,10 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text('Habit Tracker'),
             Text(
-              timeOffset > 0 
-                  ? '$formattedDate (+${timeOffset}h)' 
+              timeOffset > 0
+                  ? '$formattedDate (+${timeOffset}h)'
                   : formattedDate,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
             ),
           ],
         ),
@@ -146,17 +148,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 )
-              : ListView.builder(
+              : ListView(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _habits.length,
-                  itemBuilder: (context, index) {
-                    final habit = _habits[index];
-                    return HabitItem(
-                      habit: habit,
-                      onToggle: () => _toggleCompletion(habit),
-                      onDelete: () => _deleteHabit(habit.id),
-                    );
-                  },
+                  children: [
+                    HabitCalendar(habits: _habits),
+                    const SizedBox(height: 8),
+                    ...List.generate(_habits.length, (index) {
+                      final habit = _habits[index];
+                      return HabitItem(
+                        habit: habit,
+                        onToggle: () => _toggleCompletion(habit),
+                        onDelete: () => _deleteHabit(habit.id),
+                      );
+                    }),
+                  ],
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddHabit,

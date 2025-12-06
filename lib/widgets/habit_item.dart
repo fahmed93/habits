@@ -108,11 +108,15 @@ class HabitItem extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isCompleted ? Colors.green : Colors.grey[300],
+                color: isCompleted ? Color(habit.colorValue) : Colors.grey[300],
+                border: Border.all(
+                  color: Color(habit.colorValue),
+                  width: 2,
+                ),
               ),
               child: Icon(
                 isCompleted ? Icons.check : Icons.circle_outlined,
-                color: isCompleted ? Colors.white : Colors.grey[600],
+                color: isCompleted ? Colors.white : Color(habit.colorValue),
               ),
             ),
           ),
@@ -141,10 +145,10 @@ class HabitItem extends StatelessWidget {
           ),
           trailing: Text(
             '${habit.completions.length}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
+              color: Color(habit.colorValue),
             ),
           ),
         ),
