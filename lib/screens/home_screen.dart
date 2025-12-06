@@ -3,26 +3,31 @@ import 'package:intl/intl.dart';
 import '../models/habit.dart';
 import '../services/habit_storage.dart';
 import '../services/time_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/habit_calendar.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String userId;
+  
+  const HomeScreen({super.key, required this.userId});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final HabitStorage _storage = HabitStorage();
+  late final HabitStorage _storage;
   final TimeService _timeService = TimeService();
+  final AuthService _authService = AuthService();
   List<Habit> _habits = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _storage = HabitStorage(userId: widget.userId);
     _initializeApp();
   }
 
@@ -86,6 +91,31 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _handleLogout() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await _authService.signOut();
+      // Navigation will be handled by the auth state listener in main.dart
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = _timeService.now();
@@ -114,6 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.access_time),
             tooltip: '+24 hours',
             onPressed: _add24Hours,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: _handleLogout,
           ),
         ],
       ),
