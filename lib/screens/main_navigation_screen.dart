@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
 import 'calendar_screen.dart';
+import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   final String userId;
@@ -124,6 +125,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
+  void _navigateToSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    );
+  }
+
   Widget _buildHabitsListView() {
     if (_habits.isEmpty) {
       return Center(
@@ -181,6 +189,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: 'Settings',
+          onPressed: _navigateToSettings,
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
