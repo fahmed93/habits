@@ -9,6 +9,7 @@ void main() {
       id: '1',
       name: 'Test Habit',
       interval: 'daily',
+      createdAt: DateTime.now(),
       completions: [],
       colorValue: 0xFF4CAF50,
     );
@@ -33,6 +34,7 @@ void main() {
       id: '2',
       name: 'Exercise',
       interval: 'daily',
+      createdAt: DateTime.now(),
       completions: [],
       colorValue: 0xFFFF5722,
       icon: '💪',
