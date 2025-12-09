@@ -128,7 +128,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void _navigateToSettings() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      MaterialPageRoute(
+          builder: (context) => SettingsScreen(userId: widget.userId)),
     );
   }
 

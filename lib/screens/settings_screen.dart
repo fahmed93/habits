@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  final String? userId;
+
+  const SettingsScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +21,11 @@ class SettingsScreen extends StatelessWidget {
             subtitle: const Text('Configure reminder notifications'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Implement notification settings
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('TODO: Implement notification settings'),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NotificationSettingsScreen(userId: userId),
                 ),
               );
             },
