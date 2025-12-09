@@ -19,14 +19,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   int _selectedColor = Habit.habitColors[0];
   String _selectedIcon = '✓';
 
-  // Predefined emoji options for habits
-  static const List<String> _habitIcons = [
-    '✓', '💪', '📚', '🏃', '🧘', '💻',
-    '🎨', '🎵', '✍️', '🌱', '💧', '🍎',
-    '🛏️', '🧹', '📝', '🎯', '⚡', '🔥',
-    '🌟', '💡', '🎓', '🏋️', '🚴', '🏊',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -37,6 +29,11 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     {'value': 'daily', 'label': 'Daily'},
     {'value': 'weekly', 'label': 'Weekly'},
     {'value': 'monthly', 'label': 'Monthly'},
+  ];
+
+  final List<String> _habitIcons = [
+    '✓', '💪', '🏃', '📚', '🧘', '💧', '🎯', '⭐', '🔥', '✨',
+    '🎨', '✍️', '🎵', '🌱', '🌟', '💡', '🎓', '🏆', '❤️', '🌈',
   ];
 
   @override
@@ -91,6 +88,50 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Icon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _habitIcons.map((icon) {
+                  final isSelected = _selectedIcon == icon;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedIcon = icon;
+                      });
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey[300]!,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        icon,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 24),
               const Text(
@@ -168,54 +209,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                               size: 20,
                             )
                           : null,
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Icon',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _habitIcons.map((icon) {
-                  final isSelected = _selectedIcon == icon;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIcon = icon;
-                      });
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Color(_selectedColor).withOpacity(0.2)
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        border: isSelected
-                            ? Border.all(
-                                color: Color(_selectedColor),
-                                width: 2,
-                              )
-                            : Border.all(
-                                color: Colors.grey[300]!,
-                                width: 1,
-                              ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          icon,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                      ),
                     ),
                   );
                 }).toList(),
