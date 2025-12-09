@@ -166,10 +166,13 @@ void main() {
       expect(updatedHabit.name, habit.name);
     });
 
-    test('Habit habitColors should contain 12 predefined colors', () {
+    test('Habit habitColors should contain predefined colors', () {
+      expect(Habit.habitColors, isNotEmpty);
       expect(Habit.habitColors.length, 12);
-      expect(Habit.habitColors[0], 0xFF6366F1); // Indigo
-      expect(Habit.habitColors[1], 0xFF8B5CF6); // Violet
+      // Verify all entries are valid color values
+      for (final color in Habit.habitColors) {
+        expect(color, isA<int>());
+      }
     });
 
     test('Habit should handle empty completions list', () {

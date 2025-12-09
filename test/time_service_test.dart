@@ -73,7 +73,7 @@ void main() {
       final now = service.now();
       final actualNow = DateTime.now();
 
-      // Allow 1 second difference for test execution time
+      // Allow 2 seconds difference for test execution time
       expect(now.difference(actualNow).abs().inSeconds < 2, true);
     });
 
@@ -86,7 +86,7 @@ void main() {
       final now = service.now();
       final expectedTime = DateTime.now().add(const Duration(hours: 5));
 
-      // Allow 1 second difference for test execution time
+      // Allow 2 seconds difference for test execution time
       expect(now.difference(expectedTime).abs().inSeconds < 2, true);
     });
 
@@ -99,7 +99,7 @@ void main() {
       final now = service.now();
       final expectedTime = DateTime.now().add(const Duration(hours: -3));
 
-      // Allow 1 second difference for test execution time
+      // Allow 2 seconds difference for test execution time
       expect(now.difference(expectedTime).abs().inSeconds < 2, true);
     });
 

@@ -111,13 +111,8 @@ After running tests with coverage:
 flutter test --coverage
 ```
 
-Generate HTML report (requires lcov):
+Generate HTML report (requires lcov - see installation instructions above):
 ```bash
-# Install lcov if not already installed
-# Ubuntu/Debian: sudo apt-get install lcov
-# macOS: brew install lcov
-
-# Generate HTML report
 genhtml coverage/lcov.info -o coverage/html
 
 # Open in browser
