@@ -14,6 +14,9 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
+  static const int _defaultHour = 9;
+  static const int _defaultMinute = 0;
+  
   late final NotificationSettingsService _service;
   NotificationSettings _settings = const NotificationSettings();
   bool _isLoading = true;
@@ -44,9 +47,7 @@ class _NotificationSettingsScreenState
     try {
       final timeParts = _settings.reminderTime.split(':');
       if (timeParts.length != 2) {
-        // Invalid format, use default
-        timeParts.clear();
-        timeParts.addAll(['9', '0']);
+        throw const FormatException('Invalid time format');
       }
 
       final initialTime = TimeOfDay(
@@ -66,7 +67,7 @@ class _NotificationSettingsScreenState
       }
     } catch (e) {
       // If parsing fails, use default time
-      final initialTime = const TimeOfDay(hour: 9, minute: 0);
+      const initialTime = TimeOfDay(hour: _defaultHour, minute: _defaultMinute);
 
       final TimeOfDay? picked = await showTimePicker(
         context: context,
