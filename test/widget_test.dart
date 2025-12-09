@@ -19,6 +19,7 @@ void main() {
         interval: 'daily',
         createdAt: DateTime.now(),
         completions: [],
+        colorValue: 0xFF4CAF50,
       );
 
       await tester.pumpWidget(
@@ -43,6 +44,7 @@ void main() {
         interval: 'daily',
         createdAt: DateTime.now(),
         completions: [],
+        colorValue: 0xFFFF5722,
         icon: '📚',
       );
 
@@ -59,6 +61,7 @@ void main() {
       );
 
       expect(find.text('📚'), findsOneWidget);
+      expect(find.text('Reading'), findsOneWidget);
     });
   });
 }

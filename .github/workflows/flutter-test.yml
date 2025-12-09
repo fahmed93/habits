@@ -1,23 +1,28 @@
 name: Flutter Tests
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
   test:
+    name: Run Flutter Tests
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
       
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
           channel: 'stable'
+      
+      - name: Verify Flutter installation
+        run: flutter --version
       
       - name: Install dependencies
         run: flutter pub get

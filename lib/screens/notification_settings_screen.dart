@@ -69,6 +69,8 @@ class _NotificationSettingsScreenState
       // If parsing fails, use default time
       const initialTime = TimeOfDay(hour: _defaultHour, minute: _defaultMinute);
 
+      if (!mounted) return;
+
       final TimeOfDay? picked = await showTimePicker(
         context: context,
         initialTime: initialTime,
