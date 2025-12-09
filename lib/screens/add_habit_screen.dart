@@ -17,6 +17,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   late final HabitStorage _storage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
+  String _selectedIcon = '✓';
 
   @override
   void initState() {
@@ -28,6 +29,11 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     {'value': 'daily', 'label': 'Daily'},
     {'value': 'weekly', 'label': 'Weekly'},
     {'value': 'monthly', 'label': 'Monthly'},
+  ];
+
+  final List<String> _availableIcons = [
+    '✓', '💪', '🏃', '📚', '🧘', '💧', '🎯', '⭐', '🔥', '✨',
+    '🎨', '✍️', '🎵', '🌱', '🌟', '💡', '🎓', '🏆', '❤️', '🌈',
   ];
 
   @override
@@ -45,6 +51,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         createdAt: DateTime.now(),
         completions: [],
         colorValue: _selectedColor,
+        icon: _selectedIcon,
       );
 
       await _storage.addHabit(habit);
@@ -81,6 +88,50 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Icon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _availableIcons.map((icon) {
+                  final isSelected = _selectedIcon == icon;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedIcon = icon;
+                      });
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey[300]!,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        icon,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 24),
               const Text(

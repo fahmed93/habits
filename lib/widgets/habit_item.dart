@@ -114,12 +114,14 @@ class HabitItem extends StatelessWidget {
   List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
     final last5Days = _getLast5DaysFrom(today);
     
-    return last5Days.map((date) {
+    return last5Days.asMap().entries.map((entry) {
+      final index = entry.key;
+      final date = entry.value;
       final isToday = date.year == today.year &&
                      date.month == today.month &&
                      date.day == today.day;
       return Padding(
-        padding: const EdgeInsets.only(right: 4),
+        padding: EdgeInsets.only(right: index < 4 ? 8 : 0),
         child: _buildDayIndicator(date, isToday, context),
       );
     }).toList();
@@ -166,56 +168,69 @@ class HabitItem extends StatelessWidget {
           );
         },
         onDismissed: (direction) => onDelete(),
-        child: ListTile(
-          leading: SizedBox(
-            width: 196, // 5 indicators × 36px + 4 spacings × 4px
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: _buildDayIndicators(today, context),
-            ),
-          ),
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                habit.icon,
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  habit.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    decoration: isCompleted ? TextDecoration.lineThrough : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          subtitle: Column(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 4),
-              Text(_getIntervalDisplay()),
-              if (streak > 0)
-                Text(
-                  '$streak ${habit.interval == 'daily' ? 'day' : habit.interval == 'weekly' ? 'week' : 'month'} streak 🔥',
-                  style: const TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.w500,
+              // Header row: icon, name, and total count
+              Row(
+                children: [
+                  Text(
+                    habit.icon,
+                    style: const TextStyle(fontSize: 24),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      habit.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        decoration: isCompleted ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${habit.completions.length}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(habit.colorValue),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // 5-day completion view
+              Row(
+                children: _buildDayIndicators(today, context),
+              ),
+              const SizedBox(height: 8),
+              // Interval and streak info
+              Row(
+                children: [
+                  Text(
+                    _getIntervalDisplay(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  if (streak > 0) ...[
+                    const SizedBox(width: 16),
+                    Text(
+                      '$streak ${habit.interval == 'daily' ? 'day' : habit.interval == 'weekly' ? 'week' : 'month'} streak 🔥',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
-          ),
-          trailing: Text(
-            '${habit.completions.length}',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(habit.colorValue),
-            ),
           ),
         ),
       ),
