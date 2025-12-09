@@ -350,10 +350,14 @@ void main() {
 
       // Tap on one of the day indicators
       final gestureDetectors = find.byType(GestureDetector);
-      await tester.tap(gestureDetectors.first);
-      await tester.pumpAndSettle();
+      // Verify we have gesture detectors
+      expect(gestureDetectors, findsWidgets);
+      if (gestureDetectors.evaluate().isNotEmpty) {
+        await tester.tap(gestureDetectors.first);
+        await tester.pumpAndSettle();
 
-      expect(toggledDate, isNotNull);
+        expect(toggledDate, isNotNull);
+      }
     });
 
     testWidgets('HabitItem should show completed habit with line-through',

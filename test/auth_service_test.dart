@@ -1,10 +1,54 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habits/services/auth_service.dart';
 import 'package:habits/models/user.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
+
+// Mock Firebase setup for testing
+void setupFirebaseCoreMocks() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setupFirebaseCorePlatformMocks();
+}
+
+void setupFirebaseCorePlatformMocks() {
+  MethodChannelFirebase.channel.setMockMethodCallHandler((call) async {
+    if (call.method == 'Firebase#initializeCore') {
+      return [
+        {
+          'name': '[DEFAULT]',
+          'options': {
+            'apiKey': '123',
+            'appId': '123',
+            'messagingSenderId': '123',
+            'projectId': '123',
+          },
+          'pluginConstants': {},
+        }
+      ];
+    }
+
+    if (call.method == 'Firebase#initializeApp') {
+      return {
+        'name': call.arguments['appName'],
+        'options': call.arguments['options'],
+        'pluginConstants': {},
+      };
+    }
+
+    return null;
+  });
+}
 
 void main() {
+  setupFirebaseCoreMocks();
+
   group('AuthService Tests', () {
     late AuthService authService;
+
+    setUpAll(() async {
+      await Firebase.initializeApp();
+    });
 
     setUp(() {
       authService = AuthService();

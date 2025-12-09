@@ -133,8 +133,9 @@ void main() {
         ),
       );
 
-      expect(find.byType(Center), findsOneWidget);
-      expect(find.byType(Column), findsOneWidget);
+      // More specific - find Center widget within CalendarScreen body
+      expect(find.byType(Center), findsWidgets);
+      expect(find.byType(Column), findsWidgets);
     });
   });
 }

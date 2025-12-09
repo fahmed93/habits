@@ -132,44 +132,47 @@ class _HabitCalendarState extends State<HabitCalendar> {
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with month navigation
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: _previousMonth,
-                  tooltip: 'Previous month',
-                ),
-                Text(
-                  _getMonthYearText(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: _nextMonth,
-                  tooltip: 'Next month',
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Calendar grid
-            GridView.count(
-              crossAxisCount: 7,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1,
-              children: _buildCalendarDays(context),
-            ),
-            const SizedBox(height: 12),
-            // Legend
-            _buildLegend(context),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with month navigation
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: _previousMonth,
+                    tooltip: 'Previous month',
+                  ),
+                  Text(
+                    _getMonthYearText(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: _nextMonth,
+                    tooltip: 'Next month',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Calendar grid
+              GridView.count(
+                crossAxisCount: 7,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1,
+                children: _buildCalendarDays(context),
+              ),
+              const SizedBox(height: 12),
+              // Legend
+              _buildLegend(context),
+            ],
+          ),
         ),
       ),
     );

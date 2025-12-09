@@ -1,67 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:habits/models/habit.dart';
-import 'package:habits/widgets/habit_item.dart';
+import 'package:habits/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
+
+// Mock Firebase setup for testing
+void setupFirebaseCoreMocks() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  MethodChannelFirebase.channel.setMockMethodCallHandler((call) async {
+    if (call.method == 'Firebase#initializeCore') {
+      return [
+        {
+          'name': '[DEFAULT]',
+          'options': {
+            'apiKey': '123',
+            'appId': '123',
+            'messagingSenderId': '123',
+            'projectId': '123',
+          },
+          'pluginConstants': {},
+        }
+      ];
+    }
+
+    if (call.method == 'Firebase#initializeApp') {
+      return {
+        'name': call.arguments['appName'],
+        'options': call.arguments['options'],
+        'pluginConstants': {},
+      };
+    }
+
+    return null;
+  });
+}
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  setupFirebaseCoreMocks();
+
+  setUpAll(() async {
+    await Firebase.initializeApp();
+  });
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  group('HabitItem Widget Tests', () {
-    testWidgets('HabitItem should display habit name', (WidgetTester tester) async {
-      final habit = Habit(
-        id: '1',
-        name: 'Exercise',
-        interval: 'daily',
-        createdAt: DateTime.now(),
-        completions: [],
-        colorValue: 0xFF4CAF50,
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: HabitItem(
-              habit: habit,
-              onToggle: () {},
-              onDelete: () {},
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('Exercise'), findsOneWidget);
+  group('HabitsApp Widget Tests', () {
+    testWidgets('HabitsApp should create MaterialApp', (WidgetTester tester) async {
+      await tester.pumpWidget(const HabitsApp());
+      
+      // The app should be created
+      expect(find.byType(MaterialApp), findsOneWidget);
     });
 
-    testWidgets('HabitItem should display habit icon', (WidgetTester tester) async {
-      final habit = Habit(
-        id: '1',
-        name: 'Reading',
-        interval: 'daily',
-        createdAt: DateTime.now(),
-        completions: [],
-        colorValue: 0xFFFF5722,
-        icon: '📚',
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: HabitItem(
-              habit: habit,
-              onToggle: () {},
-              onDelete: () {},
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('📚'), findsOneWidget);
-      expect(find.text('Reading'), findsOneWidget);
+    testWidgets('HabitsApp should use Material 3', (WidgetTester tester) async {
+      await tester.pumpWidget(const HabitsApp());
+      await tester.pumpAndSettle();
+      
+      // Verify Material 3 is being used
+      final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(materialApp.theme?.useMaterial3, true);
     });
   });
 }
