@@ -263,12 +263,12 @@ class _CalendarDay extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                color: isFuture
-                    ? Theme.of(context)
-                        .colorScheme
-                        .onSurfaceVariant
-                        .withValues(alpha: 0.5)
-                    : Theme.of(context).colorScheme.onSurface,
+        color: isFuture
+          ? Theme.of(context)
+            .colorScheme
+            .onSurfaceVariant
+            .withOpacity(0.5)
+          : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             if (!isFuture && habitColors.isNotEmpty)
