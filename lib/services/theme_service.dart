@@ -29,7 +29,8 @@ class ThemeService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeKey, mode.toString());
     } catch (e) {
-      // Handle error silently
+      // Silently handle SharedPreferences errors
+      // This is acceptable as theme preference is not critical to app functionality
     }
   }
 }

@@ -10,21 +10,18 @@ void main() {
     late ThemeService themeService;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       themeService = ThemeService();
     });
 
     test('getThemeMode should return system theme when no preference is saved',
         () async {
-      SharedPreferences.setMockInitialValues({});
-      
       final themeMode = await themeService.getThemeMode();
       
       expect(themeMode, ThemeMode.system);
     });
 
     test('setThemeMode and getThemeMode should persist light theme', () async {
-      SharedPreferences.setMockInitialValues({});
-      
       await themeService.setThemeMode(ThemeMode.light);
       final themeMode = await themeService.getThemeMode();
       
@@ -32,8 +29,6 @@ void main() {
     });
 
     test('setThemeMode and getThemeMode should persist dark theme', () async {
-      SharedPreferences.setMockInitialValues({});
-      
       await themeService.setThemeMode(ThemeMode.dark);
       final themeMode = await themeService.getThemeMode();
       
@@ -41,8 +36,6 @@ void main() {
     });
 
     test('setThemeMode and getThemeMode should persist system theme', () async {
-      SharedPreferences.setMockInitialValues({});
-      
       await themeService.setThemeMode(ThemeMode.system);
       final themeMode = await themeService.getThemeMode();
       
