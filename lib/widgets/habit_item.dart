@@ -32,10 +32,7 @@ class HabitItem extends StatelessWidget {
         completion.day == date.day);
   }
 
-  List<DateTime> _getLast5Days() {
-    final now = TimeService().now();
-    final today = DateTime(now.year, now.month, now.day);
-    
+  List<DateTime> _getLast5DaysFrom(DateTime today) {
     // Generate last 5 days, with today on the right (index 4)
     return List.generate(5, (index) {
       return today.subtract(Duration(days: 4 - index));
@@ -115,7 +112,7 @@ class HabitItem extends StatelessWidget {
   }
 
   List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
-    final last5Days = _getLast5Days();
+    final last5Days = _getLast5DaysFrom(today);
     
     return last5Days.map((date) {
       final isToday = date.year == today.year &&
