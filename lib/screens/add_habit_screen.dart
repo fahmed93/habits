@@ -195,7 +195,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                             ? [
                                 BoxShadow(
                                   color:
-                                      Color(colorValue).withOpacity(0.4),
+                                      Color(colorValue).withValues(alpha: 0.4),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 )

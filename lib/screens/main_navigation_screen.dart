@@ -11,8 +11,13 @@ import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   final String userId;
+  final Function(ThemeMode) onThemeChanged;
 
-  const MainNavigationScreen({super.key, required this.userId});
+  const MainNavigationScreen({
+    super.key,
+    required this.userId,
+    required this.onThemeChanged,
+  });
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -130,7 +135,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => SettingsScreen(userId: widget.userId)),
+        builder: (context) => SettingsScreen(
+          userId: widget.userId,
+          onThemeChanged: widget.onThemeChanged,
+        ),
+      ),
     );
   }
 
