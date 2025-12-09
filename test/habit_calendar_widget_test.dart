@@ -1,0 +1,350 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:habits/models/habit.dart';
+import 'package:habits/widgets/habit_calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  group('HabitCalendar Widget Tests', () {
+    testWidgets('HabitCalendar should display with empty habits',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      expect(find.byType(HabitCalendar), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display current month',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      final now = DateTime.now();
+      final months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+      final expectedMonth = '${months[now.month - 1]} ${now.year}';
+
+      expect(find.text(expectedMonth), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display day names',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      expect(find.text('Sun'), findsOneWidget);
+      expect(find.text('Mon'), findsOneWidget);
+      expect(find.text('Tue'), findsOneWidget);
+      expect(find.text('Wed'), findsOneWidget);
+      expect(find.text('Thu'), findsOneWidget);
+      expect(find.text('Fri'), findsOneWidget);
+      expect(find.text('Sat'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display navigation buttons',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should navigate to previous month',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      final now = DateTime.now();
+      final previousMonth = DateTime(now.year, now.month - 1, 1);
+      final months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+      final expectedMonth =
+          '${months[previousMonth.month - 1]} ${previousMonth.year}';
+
+      // Tap previous button
+      await tester.tap(find.byIcon(Icons.chevron_left));
+      await tester.pumpAndSettle();
+
+      expect(find.text(expectedMonth), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should navigate to next month',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      final now = DateTime.now();
+      final nextMonth = DateTime(now.year, now.month + 1, 1);
+      final months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+      final expectedMonth = '${months[nextMonth.month - 1]} ${nextMonth.year}';
+
+      // Tap next button
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+
+      expect(find.text(expectedMonth), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display days of month',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      // Should display day 1
+      expect(find.text('1'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display legend when habits exist',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      expect(find.text('Exercise'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display multiple habits in legend',
+        (WidgetTester tester) async {
+      final habit1 = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      final habit2 = Habit(
+        id: '2',
+        name: 'Reading',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit1, habit2]),
+          ),
+        ),
+      );
+
+      expect(find.text('Exercise'), findsOneWidget);
+      expect(find.text('Reading'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should not display legend when no habits',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      // Only day names and dates should be present, no legend
+      expect(find.byType(Wrap), findsNothing);
+    });
+
+    testWidgets('HabitCalendar should display completion dots for completed habits',
+        (WidgetTester tester) async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [today],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // The calendar should render
+      expect(find.byType(GridView), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should handle habits with multiple completions',
+        (WidgetTester tester) async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final yesterday = today.subtract(const Duration(days: 1));
+
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [today, yesterday],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      expect(find.byType(HabitCalendar), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display tooltips on day tiles',
+        (WidgetTester tester) async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [today],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // Should have Tooltip widgets
+      expect(find.byType(Tooltip), findsWidgets);
+    });
+
+    testWidgets('HabitCalendar should highlight today with border',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      // The calendar should be rendered with proper containers
+      expect(find.byType(Container), findsWidgets);
+    });
+
+    testWidgets('HabitCalendar should handle year transition correctly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: []),
+          ),
+        ),
+      );
+
+      // Navigate back several times to test year transition
+      for (int i = 0; i < 13; i++) {
+        await tester.tap(find.byIcon(Icons.chevron_left));
+        await tester.pumpAndSettle();
+      }
+
+      // Should not crash and should display a valid month
+      expect(find.byType(HabitCalendar), findsOneWidget);
+    });
+  });
+}

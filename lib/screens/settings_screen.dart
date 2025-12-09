@@ -78,6 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _currentThemeMode = selectedMode;
       });
       widget.onThemeChanged(selectedMode);
+      await _themeService.setThemeMode(selectedMode);
     }
   }
 
