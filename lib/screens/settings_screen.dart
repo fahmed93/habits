@@ -43,20 +43,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Choose Theme'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: ThemeMode.values.map((mode) {
-            return RadioListTile<ThemeMode>(
-              title: Text(_getThemeModeName(mode)),
-              value: mode,
-              groupValue: _currentThemeMode,
-              onChanged: (ThemeMode? value) {
-                if (value != null) {
-                  Navigator.pop(context, value);
-                }
-              },
-            );
-          }).toList(),
+        content: RadioGroup<ThemeMode>(
+          groupValue: _currentThemeMode,
+          onChanged: (ThemeMode? value) {
+            if (value != null) {
+              Navigator.pop(context, value);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: ThemeMode.values.map((mode) {
+              return RadioListTile<ThemeMode>(
+                title: Text(_getThemeModeName(mode)),
+                value: mode,
+              );
+            }).toList(),
+          ),
         ),
         actions: [
           TextButton(
@@ -68,7 +70,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (selectedMode != null && selectedMode != _currentThemeMode) {
-      await _themeService.setThemeMode(selectedMode);
       setState(() {
         _currentThemeMode = selectedMode;
       });

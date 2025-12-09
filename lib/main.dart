@@ -38,7 +38,8 @@ class _HabitsAppState extends State<HabitsApp> {
     });
   }
 
-  void _updateThemeMode(ThemeMode mode) {
+  Future<void> _updateThemeMode(ThemeMode mode) async {
+    await _themeService.setThemeMode(mode);
     setState(() {
       _themeMode = mode;
     });
@@ -95,7 +96,7 @@ class AuthWrapper extends StatelessWidget {
         }
         
         // Show login screen if user is not signed in
-        return const LoginScreen();
+        return LoginScreen(onThemeChanged: onThemeChanged);
       },
     );
   }
