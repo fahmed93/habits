@@ -38,11 +38,8 @@ class CalendarScreen extends StatelessWidget {
               ],
             ),
           )
-        : ListView(
-            padding: const EdgeInsets.all(0),
-            children: [
-              HabitCalendar(habits: habits),
-            ],
+        : SingleChildScrollView(
+            child: HabitCalendar(habits: habits),
           );
   }
 }
