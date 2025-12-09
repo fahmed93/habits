@@ -101,25 +101,37 @@ class HabitItem extends StatelessWidget {
             width: isToday ? 2 : 1,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$day',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                color: isCompleted ? Colors.white : Colors.grey[700],
-              ),
-            ),
-          ],
+        alignment: Alignment.center,
+        child: Text(
+          '$day',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+            color: isCompleted ? Colors.white : Colors.grey[700],
+          ),
         ),
       ),
     );
   }
 
+  List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
+    final last5Days = _getLast5Days();
+    
+    return last5Days.map((date) {
+      final isToday = date.year == today.year &&
+                     date.month == today.month &&
+                     date.day == today.day;
+      return Padding(
+        padding: const EdgeInsets.only(right: 4),
+        child: _buildDayIndicator(date, isToday, context),
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final now = TimeService().now();
+    final today = DateTime(now.year, now.month, now.day);
     final isCompleted = _isCompletedToday();
     final streak = _getCurrentStreak();
 
@@ -159,24 +171,10 @@ class HabitItem extends StatelessWidget {
         onDismissed: (direction) => onDelete(),
         child: ListTile(
           leading: SizedBox(
-            width: 200,
+            width: 196, // 5 indicators × 36px + 4 spacings × 4px
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: () {
-                final last5Days = _getLast5Days();
-                final now = TimeService().now();
-                final today = DateTime(now.year, now.month, now.day);
-                
-                return last5Days.map((date) {
-                  final isToday = date.year == today.year &&
-                                 date.month == today.month &&
-                                 date.day == today.day;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: _buildDayIndicator(date, isToday, context),
-                  );
-                }).toList();
-              }(),
+              children: _buildDayIndicators(today, context),
             ),
           ),
           title: Text(
