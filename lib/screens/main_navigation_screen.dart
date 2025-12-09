@@ -52,23 +52,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
-  Future<void> _toggleCompletion(Habit habit) async {
+  Future<void> _toggleCompletion(Habit habit, [DateTime? date]) async {
     final now = _timeService.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final targetDate = date ?? DateTime(now.year, now.month, now.day);
+    final normalizedDate = DateTime(targetDate.year, targetDate.month, targetDate.day);
 
     final completions = List<DateTime>.from(habit.completions);
-    final isCompletedToday = completions.any((date) =>
-        date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day);
+    final isCompletedOnDate = completions.any((d) =>
+        d.year == normalizedDate.year &&
+        d.month == normalizedDate.month &&
+        d.day == normalizedDate.day);
 
-    if (isCompletedToday) {
-      completions.removeWhere((date) =>
-          date.year == today.year &&
-          date.month == today.month &&
-          date.day == today.day);
+    if (isCompletedOnDate) {
+      completions.removeWhere((d) =>
+          d.year == normalizedDate.year &&
+          d.month == normalizedDate.month &&
+          d.day == normalizedDate.day);
     } else {
-      completions.add(today);
+      completions.add(normalizedDate);
     }
 
     final updatedHabit = habit.copyWith(completions: completions);
@@ -181,6 +182,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           return HabitItem(
             habit: habit,
             onToggle: () => _toggleCompletion(habit),
+            onToggleDate: (date) => _toggleCompletion(habit, date),
             onDelete: () => _deleteHabit(habit.id),
           );
         }),
