@@ -168,9 +168,39 @@ class HabitItem extends StatelessWidget {
           );
         },
         onDismissed: (direction) => onDelete(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
+        child: ListTile(
+          leading: GestureDetector(
+            onTap: onToggle,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isCompleted ? Color(habit.colorValue) : Colors.grey[300],
+                border: Border.all(
+                  color: Color(habit.colorValue),
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  habit.icon,
+                  style: const TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          title: Text(
+            habit.name,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              decoration: isCompleted ? TextDecoration.lineThrough : null,
+            ),
+          ),
+          subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header row: icon, name, and total count

@@ -9,6 +9,13 @@ Users can create new habits with:
   - Daily: Track every day
   - Weekly: Track every week
   - Monthly: Track every month
+- **Color Selection**: Choose from 12 vibrant colors to personalize each habit
+- **Icon/Emoji Selection**: Choose from 24 emoji icons to visually represent the habit
+  - Fitness: 💪 🏃 🧘 🏋️ 🚴 🏊
+  - Productivity: ✓ 📚 💻 📝 🎯
+  - Health: 🌱 💧 🍎 🛏️
+  - Creative: 🎨 🎵 ✍️
+  - And more: 🧹 ⚡ 🔥 🌟 💡 🎓
 - **Form Validation**: Ensures habit name is not empty
 - **Simple UI**: Clean form with radio buttons for interval selection
 
@@ -16,11 +23,12 @@ Users can create new habits with:
 
 ### 2. Track Completion ✅
 Users can mark habits as complete:
-- **One-Tap Toggle**: Tap the circle icon to mark complete/incomplete
+- **One-Tap Toggle**: Tap the emoji icon to mark complete/incomplete
 - **Visual Feedback**: 
-  - Green checkmark when completed
+  - Colored background when completed
+  - Emoji icon displays in natural colors
   - Line-through text for completed habits
-  - Circle outline for incomplete habits
+  - Gray background for incomplete habits
 - **Today's Tracking**: Automatically tracks completion for the current day
 - **Persistent**: Completions are saved and survive app restarts
 
@@ -30,10 +38,12 @@ Users can mark habits as complete:
 Home screen shows all habits with:
 - **Scrollable List**: All habits in a clean, organized list
 - **Habit Details**:
+  - Custom emoji icon for visual identification
   - Habit name
   - Interval type (Daily/Weekly/Monthly)
   - Total completion count
   - Current streak (if active)
+- **Color-Coded**: Each habit displays with its selected color
 - **Empty State**: Helpful message when no habits exist
 - **Loading State**: Shows spinner while loading data
 
@@ -79,7 +89,8 @@ All data is saved locally:
 - **Responsive Layout**: Adapts to different screen sizes
 - **Intuitive Navigation**: Simple flow between screens
 - **Visual Feedback**: Immediate response to user actions
-- **Color Coding**: Green for complete, grey for incomplete
+- **Color Coding**: Custom colors for each habit
+- **Icon Personalization**: 24 emoji options for visual identification
 
 ### Testing
 - **Unit Tests**: Model serialization and business logic
@@ -89,8 +100,8 @@ All data is saved locally:
 ## Usage Flow
 
 1. **First Launch**: User sees empty state with helpful message
-2. **Add Habit**: Tap + button → Enter name → Select interval → Save
-3. **Track Daily**: Tap circle to mark complete → See checkmark and streak
+2. **Add Habit**: Tap + button → Enter name → Select interval → Choose color → Choose icon → Save
+3. **Track Daily**: Tap emoji icon to mark complete → See colored background and streak
 4. **View Progress**: See completion count and current streak
 5. **Manage**: Swipe left to delete unwanted habits
 
@@ -103,6 +114,8 @@ All data is saved locally:
   name: String,         // Habit name
   interval: String,     // 'daily', 'weekly', or 'monthly'
   createdAt: DateTime,  // When habit was created
+  colorValue: int,      // Color as int for JSON serialization
+  icon: String,         // Emoji icon for visual identification
   completions: [        // List of completion dates
     DateTime,
     DateTime,
