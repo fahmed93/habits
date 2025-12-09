@@ -60,7 +60,7 @@ class _NotificationSettingsScreenState
         initialTime: initialTime,
       );
 
-      if (picked != null) {
+      if (picked != null && mounted) {
         final timeString =
             '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
         await _saveSettings(_settings.copyWith(reminderTime: timeString));
@@ -74,7 +74,7 @@ class _NotificationSettingsScreenState
         initialTime: initialTime,
       );
 
-      if (picked != null) {
+      if (picked != null && mounted) {
         final timeString =
             '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
         await _saveSettings(_settings.copyWith(reminderTime: timeString));

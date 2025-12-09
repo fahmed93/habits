@@ -142,22 +142,20 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              RadioGroup<String>(
-                groupValue: _selectedInterval,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedInterval = value!;
-                  });
-                },
-                child: Column(
-                  children: _intervals.map((interval) {
-                    return RadioListTile<String>(
-                      title: Text(interval['label']!),
-                      value: interval['value']!,
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  }).toList(),
-                ),
+              Column(
+                children: _intervals.map((interval) {
+                  return RadioListTile<String>(
+                    title: Text(interval['label']!),
+                    value: interval['value']!,
+                    groupValue: _selectedInterval,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedInterval = value!;
+                      });
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 24),
               const Text(

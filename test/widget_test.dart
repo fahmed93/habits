@@ -1,16 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:habits/models/habit.dart';
+import 'package:habits/widgets/habit_item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  // Note: These tests are commented out as they require Firebase initialization
-  // which is complex to mock in unit tests. The app structure has been verified
-  // to work correctly through manual testing and other widget tests.
-  
-  group('Main App Tests', () {
-    test('Basic app structure test placeholder', () {
-      // This is a placeholder to indicate that app-level tests
-      // would require Firebase mocking setup
-      expect(true, true);
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  group('HabitItem Widget Tests', () {
+    testWidgets('HabitItem should display habit name', (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Exercise'), findsOneWidget);
+    });
+
+    testWidgets('HabitItem should display habit icon', (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Reading',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+        icon: '📚',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('📚'), findsOneWidget);
     });
   });
 }
