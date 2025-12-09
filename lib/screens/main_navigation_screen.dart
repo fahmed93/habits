@@ -136,6 +136,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => SettingsScreen(
+          userId: widget.userId,
           onThemeChanged: widget.onThemeChanged,
         ),
       ),

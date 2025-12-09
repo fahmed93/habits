@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../services/theme_service.dart';
+import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
+  final String? userId;
   final Function(ThemeMode) onThemeChanged;
 
-  const SettingsScreen({super.key, required this.onThemeChanged});
+  const SettingsScreen({
+    super.key,
+    this.userId,
+    required this.onThemeChanged,
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -92,10 +98,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text('Configure reminder notifications'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Implement notification settings
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('TODO: Implement notification settings'),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NotificationSettingsScreen(userId: widget.userId),
                 ),
               );
             },
