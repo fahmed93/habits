@@ -174,13 +174,25 @@ class HabitItem extends StatelessWidget {
               children: _buildDayIndicators(today, context),
             ),
           ),
-          title: Text(
-            habit.name,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              decoration: isCompleted ? TextDecoration.lineThrough : null,
-            ),
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                habit.icon,
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  habit.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+            ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
