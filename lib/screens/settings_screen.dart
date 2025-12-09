@@ -1,7 +1,80 @@
 import 'package:flutter/material.dart';
+import '../services/theme_service.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  final Function(ThemeMode) onThemeChanged;
+
+  const SettingsScreen({super.key, required this.onThemeChanged});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final ThemeService _themeService = ThemeService();
+  ThemeMode _currentThemeMode = ThemeMode.system;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeMode();
+  }
+
+  Future<void> _loadThemeMode() async {
+    final themeMode = await _themeService.getThemeMode();
+    setState(() {
+      _currentThemeMode = themeMode;
+    });
+  }
+
+  String _getThemeModeName(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+      case ThemeMode.system:
+        return 'System';
+    }
+  }
+
+  Future<void> _showThemeDialog() async {
+    final selectedMode = await showDialog<ThemeMode>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose Theme'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: ThemeMode.values.map((mode) {
+            return RadioListTile<ThemeMode>(
+              title: Text(_getThemeModeName(mode)),
+              value: mode,
+              groupValue: _currentThemeMode,
+              onChanged: (ThemeMode? value) {
+                if (value != null) {
+                  Navigator.pop(context, value);
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (selectedMode != null && selectedMode != _currentThemeMode) {
+      await _themeService.setThemeMode(selectedMode);
+      setState(() {
+        _currentThemeMode = selectedMode;
+      });
+      widget.onThemeChanged(selectedMode);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +103,9 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.palette),
             title: const Text('Theme'),
-            subtitle: const Text('Change app theme and appearance'),
+            subtitle: Text('Current: ${_getThemeModeName(_currentThemeMode)}'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // TODO: Implement theme settings
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('TODO: Implement theme settings'),
-                ),
-              );
-            },
+            onTap: _showThemeDialog,
           ),
           const Divider(),
           ListTile(
