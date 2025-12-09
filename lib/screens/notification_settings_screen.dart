@@ -41,21 +41,43 @@ class _NotificationSettingsScreenState
   }
 
   Future<void> _selectTime() async {
-    final timeParts = _settings.reminderTime.split(':');
-    final initialTime = TimeOfDay(
-      hour: int.parse(timeParts[0]),
-      minute: int.parse(timeParts[1]),
-    );
+    try {
+      final timeParts = _settings.reminderTime.split(':');
+      if (timeParts.length != 2) {
+        // Invalid format, use default
+        timeParts.clear();
+        timeParts.addAll(['9', '0']);
+      }
 
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: initialTime,
-    );
+      final initialTime = TimeOfDay(
+        hour: int.parse(timeParts[0]),
+        minute: int.parse(timeParts[1]),
+      );
 
-    if (picked != null) {
-      final timeString =
-          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
-      await _saveSettings(_settings.copyWith(reminderTime: timeString));
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: initialTime,
+      );
+
+      if (picked != null) {
+        final timeString =
+            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+        await _saveSettings(_settings.copyWith(reminderTime: timeString));
+      }
+    } catch (e) {
+      // If parsing fails, use default time
+      final initialTime = const TimeOfDay(hour: 9, minute: 0);
+
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: initialTime,
+      );
+
+      if (picked != null) {
+        final timeString =
+            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+        await _saveSettings(_settings.copyWith(reminderTime: timeString));
+      }
     }
   }
 

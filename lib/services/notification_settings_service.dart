@@ -27,7 +27,7 @@ class NotificationSettingsService {
         return const NotificationSettings();
       }
 
-      final settingsJson = jsonDecode(settingsString);
+      final settingsJson = jsonDecode(settingsString) as Map<String, dynamic>;
       return NotificationSettings.fromJson(settingsJson);
     } catch (e) {
       // Return default settings if data is corrupted
