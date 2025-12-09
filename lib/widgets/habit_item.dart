@@ -79,7 +79,8 @@ class HabitItem extends StatelessWidget {
 
   Widget _buildDayIndicator(DateTime date, bool isToday, BuildContext context) {
     final isCompleted = _isCompletedOnDate(date);
-    final day = date.day;
+    final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.weekday % 7];
+    final monthDay = '${date.month}/${date.day}';
     
     return GestureDetector(
       onTap: () {
@@ -87,26 +88,40 @@ class HabitItem extends StatelessWidget {
           onToggleDate!(date);
         }
       },
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isCompleted ? Color(habit.colorValue) : Colors.grey[200],
-          border: Border.all(
-            color: isToday ? Color(habit.colorValue) : Colors.grey[300]!,
-            width: isToday ? 2 : 1,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            dayOfWeek,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+              color: isToday ? Color(habit.colorValue) : Colors.grey[600],
+            ),
           ),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          '$day',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-            color: isCompleted ? Colors.white : Colors.grey[700],
+          const SizedBox(height: 6),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: isCompleted ? Color(habit.colorValue) : Colors.grey[200],
+              border: Border.all(
+                color: isToday ? Color(habit.colorValue) : Colors.grey[300]!,
+                width: isToday ? 2.5 : 1,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              monthDay,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                color: isCompleted ? Colors.white : Colors.grey[700],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -114,16 +129,11 @@ class HabitItem extends StatelessWidget {
   List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
     final last5Days = _getLast5DaysFrom(today);
     
-    return last5Days.asMap().entries.map((entry) {
-      final index = entry.key;
-      final date = entry.value;
+    return last5Days.map((date) {
       final isToday = date.year == today.year &&
                      date.month == today.month &&
                      date.day == today.day;
-      return Padding(
-        padding: EdgeInsets.only(right: index < 4 ? 8 : 0),
-        child: _buildDayIndicator(date, isToday, context),
-      );
+      return _buildDayIndicator(date, isToday, context);
     }).toList();
   }
 
@@ -169,29 +179,6 @@ class HabitItem extends StatelessWidget {
         },
         onDismissed: (direction) => onDelete(),
         child: ListTile(
-          leading: GestureDetector(
-            onTap: onToggle,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted ? Color(habit.colorValue) : Colors.grey[300],
-                border: Border.all(
-                  color: Color(habit.colorValue),
-                  width: 2,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  habit.icon,
-                  style: const TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
           title: Text(
             habit.name,
             style: TextStyle(
@@ -203,40 +190,22 @@ class HabitItem extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row: icon, name, and total count
+              // Header row: icon
               Row(
                 children: [
                   Text(
                     habit.icon,
                     style: const TextStyle(fontSize: 24),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      habit.name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        decoration: isCompleted ? TextDecoration.lineThrough : null,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '${habit.completions.length}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(habit.colorValue),
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              // 5-day completion view
+              // 5-day completion view - full width
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _buildDayIndicators(today, context),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               // Interval and streak info
               Row(
                 children: [
