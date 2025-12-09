@@ -267,7 +267,7 @@ class _CalendarDay extends StatelessWidget {
                     ? Theme.of(context)
                         .colorScheme
                         .onSurfaceVariant
-                        .withOpacity(0.5)
+                        .withValues(alpha: 0.5)
                     : Theme.of(context).colorScheme.onSurface,
               ),
             ),

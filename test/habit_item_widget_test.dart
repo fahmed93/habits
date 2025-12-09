@@ -348,16 +348,28 @@ void main() {
         ),
       );
 
-      // Tap on one of the day indicators
-      final gestureDetectors = find.byType(GestureDetector);
-      // Verify we have gesture detectors
-      expect(gestureDetectors, findsWidgets);
-      if (gestureDetectors.evaluate().isNotEmpty) {
-        await tester.tap(gestureDetectors.first);
-        await tester.pumpAndSettle();
-
-        expect(toggledDate, isNotNull);
+      // Find a day indicator by looking for the day labels (e.g., 'MON', 'TUE', etc.)
+      final dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      Finder? dayIndicator;
+      
+      for (final label in dayLabels) {
+        final finder = find.text(label);
+        if (finder.evaluate().isNotEmpty) {
+          dayIndicator = finder;
+          break;
+        }
       }
+      
+      // We should find at least one day label
+      expect(dayIndicator, isNotNull);
+      expect(dayIndicator, findsOneWidget);
+      
+      // Tap on the day indicator
+      await tester.tap(dayIndicator!);
+      await tester.pumpAndSettle();
+
+      // Verify the callback was called with a date
+      expect(toggledDate, isNotNull);
     });
 
     testWidgets('HabitItem should show completed habit with line-through',

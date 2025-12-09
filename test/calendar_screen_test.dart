@@ -62,13 +62,12 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CalendarScreen(habits: [habit]),
-          ),
+          home: CalendarScreen(habits: [habit]),
         ),
       );
 
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      // CalendarScreen and HabitCalendar both use SingleChildScrollView
+      expect(find.byType(SingleChildScrollView), findsAtLeastNWidgets(1));
     });
 
     testWidgets('CalendarScreen should handle multiple habits',

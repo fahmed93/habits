@@ -1,5 +1,10 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Suppress RadioListTile deprecation warnings until RadioGroup API is stable
+    deprecated_member_use: ignore
+
 linter:
   rules:
     prefer_const_constructors: true
