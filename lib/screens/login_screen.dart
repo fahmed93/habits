@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'home_screen.dart'; // Import HomeScreen
+import 'main_navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -198,13 +198,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Widget to launch HomeScreen in guest mode
+// Widget to launch MainNavigationScreen in guest mode
 class _GuestHomeScreenLauncher extends StatelessWidget {
   const _GuestHomeScreenLauncher();
 
   @override
   Widget build(BuildContext context) {
     // Use a special userId for guest mode
-    return const HomeScreen(userId: 'guest');
+    return const MainNavigationScreen(userId: 'guest');
   }
 }
