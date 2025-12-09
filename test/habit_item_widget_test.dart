@@ -348,11 +348,27 @@ void main() {
         ),
       );
 
-      // Tap on one of the day indicators
-      final gestureDetectors = find.byType(GestureDetector);
-      await tester.tap(gestureDetectors.first);
+      // Find a day indicator by looking for the day labels (e.g., 'MON', 'TUE', etc.)
+      final dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      Finder? dayIndicator;
+      
+      for (final label in dayLabels) {
+        final finder = find.text(label);
+        if (finder.evaluate().isNotEmpty) {
+          dayIndicator = finder;
+          break;
+        }
+      }
+      
+      // We should find at least one day label
+      expect(dayIndicator, isNotNull);
+      expect(dayIndicator, findsOneWidget);
+      
+      // Tap on the day indicator
+      await tester.tap(dayIndicator!);
       await tester.pumpAndSettle();
 
+      // Verify the callback was called with a date
       expect(toggledDate, isNotNull);
     });
 
