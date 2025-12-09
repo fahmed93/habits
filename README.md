@@ -11,6 +11,7 @@ A mobile habit tracker app built with Flutter with Firebase Authentication.
 - View completion streaks
 - Swipe to delete habits
 - Persistent local storage per user
+- **Theme customization**: Choose between Light, Dark, or System theme
 
 ## Getting Started
 
@@ -56,10 +57,13 @@ lib/
 ├── services/
 │   ├── auth_service.dart  # Authentication service
 │   ├── habit_storage.dart # Local storage service (per-user)
+│   ├── theme_service.dart # Theme management service
 │   └── time_service.dart  # Time service
 ├── screens/
 │   ├── login_screen.dart  # Login screen with Google/Apple sign-in
+│   ├── main_navigation_screen.dart # Main navigation with tabs
 │   ├── home_screen.dart   # Main screen
+│   ├── settings_screen.dart # Settings screen with theme selection
 │   └── add_habit_screen.dart # Add habit screen
 └── widgets/
     ├── habit_item.dart    # Habit list item widget
@@ -73,7 +77,9 @@ lib/
 3. Enter the habit name and select an interval
 4. Tap the circle icon to mark the habit as complete for today
 5. Swipe left to delete a habit
-6. Tap the logout icon in the app bar to sign out
+6. **Access Settings** by tapping the settings icon in the app bar
+7. **Change Theme** by selecting Theme in settings and choosing Light, Dark, or System
+8. Tap the logout icon in the app bar to sign out
 
 ## Authentication
 
