@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_navigation_screen.dart';
 import 'screens/login_screen.dart';
 
 void main() async {
@@ -50,7 +50,7 @@ class AuthWrapper extends StatelessWidget {
         
         // Show home screen if user is signed in
         if (snapshot.hasData && snapshot.data != null) {
-          return HomeScreen(userId: snapshot.data!.uid);
+          return MainNavigationScreen(userId: snapshot.data!.uid);
         }
         
         // Show login screen if user is not signed in
