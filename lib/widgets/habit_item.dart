@@ -114,9 +114,13 @@ class HabitItem extends StatelessWidget {
                   width: 2,
                 ),
               ),
-              child: Icon(
-                isCompleted ? Icons.check : Icons.circle_outlined,
-                color: isCompleted ? Colors.white : Color(habit.colorValue),
+              child: Center(
+                child: Text(
+                  habit.icon,
+                  style: const TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
               ),
             ),
           ),

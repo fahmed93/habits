@@ -11,6 +11,7 @@ void main() {
         createdAt: DateTime(2024, 1, 1),
         completions: [DateTime(2024, 1, 1), DateTime(2024, 1, 2)],
         colorValue: 0xFF6366F1,
+        icon: '💪',
       );
 
       final json = habit.toJson();
@@ -22,6 +23,7 @@ void main() {
       expect(habitFromJson.createdAt, habit.createdAt);
       expect(habitFromJson.completions.length, habit.completions.length);
       expect(habitFromJson.colorValue, habit.colorValue);
+      expect(habitFromJson.icon, habit.icon);
     });
 
     test('Habit fromJson should use default color when colorValue is missing',
@@ -36,6 +38,21 @@ void main() {
 
       final habitFromJson = Habit.fromJson(json);
       expect(habitFromJson.colorValue, 0xFF6366F1);
+      expect(habitFromJson.icon, '✓'); // Should use default icon
+    });
+
+    test('Habit fromJson should use default icon when icon is missing', () {
+      final json = {
+        'id': '123',
+        'name': 'Exercise',
+        'interval': 'daily',
+        'createdAt': DateTime(2024, 1, 1).toIso8601String(),
+        'completions': [],
+        'colorValue': 0xFF6366F1,
+      };
+
+      final habitFromJson = Habit.fromJson(json);
+      expect(habitFromJson.icon, '✓');
     });
 
     test('Habit copyWith should create a new habit with updated fields', () {
@@ -67,6 +84,22 @@ void main() {
       final updatedHabit = habit.copyWith(colorValue: 0xFFEC4899);
 
       expect(updatedHabit.colorValue, 0xFFEC4899);
+      expect(updatedHabit.name, habit.name);
+    });
+
+    test('Habit copyWith should update icon', () {
+      final habit = Habit(
+        id: '123',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime(2024, 1, 1),
+        completions: [],
+        icon: '✓',
+      );
+
+      final updatedHabit = habit.copyWith(icon: '💪');
+
+      expect(updatedHabit.icon, '💪');
       expect(updatedHabit.name, habit.name);
     });
   });

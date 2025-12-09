@@ -17,6 +17,15 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   late final HabitStorage _storage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
+  String _selectedIcon = '✓';
+
+  // Predefined emoji options for habits
+  static const List<String> _habitIcons = [
+    '✓', '💪', '📚', '🏃', '🧘', '💻',
+    '🎨', '🎵', '✍️', '🌱', '💧', '🍎',
+    '🛏️', '🧹', '📝', '🎯', '⚡', '🔥',
+    '🌟', '💡', '🎓', '🏋️', '🚴', '🏊',
+  ];
 
   @override
   void initState() {
@@ -45,6 +54,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         createdAt: DateTime.now(),
         completions: [],
         colorValue: _selectedColor,
+        icon: _selectedIcon,
       );
 
       await _storage.addHabit(habit);
@@ -144,7 +154,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                             ? [
                                 BoxShadow(
                                   color:
-                                      Color(colorValue).withValues(alpha: 0.4),
+                                      Color(colorValue).withOpacity(0.4),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 )
@@ -158,6 +168,54 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                               size: 20,
                             )
                           : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Icon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _habitIcons.map((icon) {
+                  final isSelected = _selectedIcon == icon;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedIcon = icon;
+                      });
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Color(_selectedColor).withOpacity(0.2)
+                            : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                        border: isSelected
+                            ? Border.all(
+                                color: Color(_selectedColor),
+                                width: 2,
+                              )
+                            : Border.all(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          icon,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      ),
                     ),
                   );
                 }).toList(),
