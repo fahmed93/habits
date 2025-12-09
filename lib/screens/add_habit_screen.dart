@@ -154,7 +154,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                             ? [
                                 BoxShadow(
                                   color:
-                                      Color(colorValue).withValues(alpha: 0.4),
+                                      Color(colorValue).withOpacity(0.4),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 )
@@ -197,7 +197,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Color(_selectedColor).withValues(alpha: 0.2)
+                            ? Color(_selectedColor).withOpacity(0.2)
                             : Colors.grey[200],
                         borderRadius: BorderRadius.circular(8),
                         border: isSelected

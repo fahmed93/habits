@@ -117,9 +117,8 @@ class HabitItem extends StatelessWidget {
               child: Center(
                 child: Text(
                   habit.icon,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
-                    color: isCompleted ? Colors.white : Colors.grey[700],
                   ),
                 ),
               ),
