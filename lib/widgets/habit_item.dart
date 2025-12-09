@@ -6,12 +6,14 @@ class HabitItem extends StatelessWidget {
   final Habit habit;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
+  final Function(DateTime)? onToggleDate; // New callback for toggling specific dates
 
   const HabitItem({
     super.key,
     required this.habit,
     required this.onToggle,
     required this.onDelete,
+    this.onToggleDate,
   });
 
   bool _isCompletedToday() {
@@ -21,6 +23,23 @@ class HabitItem extends StatelessWidget {
         date.year == today.year &&
         date.month == today.month &&
         date.day == today.day);
+  }
+
+  bool _isCompletedOnDate(DateTime date) {
+    return habit.completions.any((completion) =>
+        completion.year == date.year &&
+        completion.month == date.month &&
+        completion.day == date.day);
+  }
+
+  List<DateTime> _getLast5Days() {
+    final now = TimeService().now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    // Generate last 5 days, with today on the right (index 4)
+    return List.generate(5, (index) {
+      return today.subtract(Duration(days: 4 - index));
+    });
   }
 
   String _getIntervalDisplay() {
@@ -59,6 +78,44 @@ class HabitItem extends StatelessWidget {
     }
 
     return streak;
+  }
+
+  Widget _buildDayIndicator(DateTime date, bool isToday, BuildContext context) {
+    final isCompleted = _isCompletedOnDate(date);
+    final day = date.day;
+    
+    return GestureDetector(
+      onTap: () {
+        if (onToggleDate != null) {
+          onToggleDate!(date);
+        }
+      },
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isCompleted ? Color(habit.colorValue) : Colors.grey[200],
+          border: Border.all(
+            color: isToday ? Color(habit.colorValue) : Colors.grey[300]!,
+            width: isToday ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$day',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                color: isCompleted ? Colors.white : Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -101,23 +158,25 @@ class HabitItem extends StatelessWidget {
         },
         onDismissed: (direction) => onDelete(),
         child: ListTile(
-          leading: GestureDetector(
-            onTap: onToggle,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted ? Color(habit.colorValue) : Colors.grey[300],
-                border: Border.all(
-                  color: Color(habit.colorValue),
-                  width: 2,
-                ),
-              ),
-              child: Icon(
-                isCompleted ? Icons.check : Icons.circle_outlined,
-                color: isCompleted ? Colors.white : Color(habit.colorValue),
-              ),
+          leading: SizedBox(
+            width: 200,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: () {
+                final last5Days = _getLast5Days();
+                final now = TimeService().now();
+                final today = DateTime(now.year, now.month, now.day);
+                
+                return last5Days.map((date) {
+                  final isToday = date.year == today.year &&
+                                 date.month == today.month &&
+                                 date.day == today.day;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: _buildDayIndicator(date, isToday, context),
+                  );
+                }).toList();
+              }(),
             ),
           ),
           title: Text(
