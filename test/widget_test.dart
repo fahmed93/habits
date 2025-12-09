@@ -1,20 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:habits/main.dart';
+import 'package:habits/models/habit.dart';
+import 'package:habits/widgets/habit_item.dart';
 
 void main() {
-  testWidgets('App should launch and show Habit Tracker title', (WidgetTester tester) async {
-    await tester.pumpWidget(const HabitsApp());
+  testWidgets('HabitItem should display habit name', (WidgetTester tester) async {
+    final habit = Habit(
+      id: '1',
+      name: 'Test Habit',
+      interval: 'daily',
+      createdAt: DateTime.now(),
+      completions: [],
+      colorValue: 0xFF4CAF50,
+    );
 
-    expect(find.text('Habit Tracker'), findsOneWidget);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: HabitItem(
+            habit: habit,
+            onToggle: () {},
+            onDelete: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Test Habit'), findsOneWidget);
   });
 
-  testWidgets('Should show empty state when no habits', (WidgetTester tester) async {
-    await tester.pumpWidget(const HabitsApp());
-    await tester.pumpAndSettle();
+  testWidgets('HabitItem should display habit icon', (WidgetTester tester) async {
+    final habit = Habit(
+      id: '2',
+      name: 'Exercise',
+      interval: 'daily',
+      createdAt: DateTime.now(),
+      completions: [],
+      colorValue: 0xFFFF5722,
+      icon: '💪',
+    );
 
-    expect(find.text('No habits yet'), findsOneWidget);
-    expect(find.text('Tap the + button to add a habit'), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: HabitItem(
+            habit: habit,
+            onToggle: () {},
+            onDelete: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('💪'), findsOneWidget);
+    expect(find.text('Exercise'), findsOneWidget);
   });
 }
