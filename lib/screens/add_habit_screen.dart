@@ -127,6 +127,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                         helperText: 'Use your keyboard to pick an emoji',
                       ),
                       style: const TextStyle(fontSize: 24),
+                      maxLength: 10,
                       onChanged: (value) {
                         setState(() {});
                       },
