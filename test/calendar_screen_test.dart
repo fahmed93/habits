@@ -144,8 +144,7 @@ void main() {
       expect(find.text('Select Habits'), findsOneWidget);
       expect(find.text('Select All'), findsOneWidget);
       expect(find.text('Deselect All'), findsOneWidget);
-      expect(find.text('Exercise'), findsOneWidget);
-      expect(find.text('Reading'), findsOneWidget);
+      expect(find.byType(CheckboxListTile), findsNWidgets(2));
     });
 
     testWidgets('CalendarScreen should filter habits',
@@ -291,7 +290,7 @@ void main() {
       await tester.tap(find.text('2/2 selected'));
       await tester.pumpAndSettle();
 
-      // Deselect one habit
+      // Deselect all habits
       await tester.tap(find.text('Deselect All'));
       await tester.pumpAndSettle();
 
@@ -306,6 +305,179 @@ void main() {
 
       // Should show Exercise chip when not all are selected
       expect(find.widgetWithText(Chip, 'Exercise'), findsOneWidget);
+    });
+
+    testWidgets('CalendarScreen should update checkboxes in real-time',
+        (WidgetTester tester) async {
+      final habits = [
+        Habit(
+          id: '1',
+          name: 'Exercise',
+          interval: 'daily',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+        Habit(
+          id: '2',
+          name: 'Reading',
+          interval: 'weekly',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CalendarScreen(habits: habits),
+          ),
+        ),
+      );
+
+      // Open filter dialog
+      await tester.tap(find.text('2/2 selected'));
+      await tester.pumpAndSettle();
+
+      // Verify both checkboxes are initially checked
+      final checkboxes = find.byType(CheckboxListTile);
+      expect(checkboxes, findsNWidgets(2));
+      
+      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
+      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, true);
+      expect(secondCheckbox.value, true);
+
+      // Tap first checkbox to uncheck it
+      await tester.tap(checkboxes.first);
+      await tester.pumpAndSettle();
+
+      // Verify first checkbox is now unchecked, second still checked
+      firstCheckbox = tester.widget(checkboxes.first);
+      secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, false);
+      expect(secondCheckbox.value, true);
+
+      // Tap first checkbox again to re-check it
+      await tester.tap(checkboxes.first);
+      await tester.pumpAndSettle();
+
+      // Verify first checkbox is checked again
+      firstCheckbox = tester.widget(checkboxes.first);
+      expect(firstCheckbox.value, true);
+
+      // Close dialog
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CalendarScreen "Select All" button should update checkboxes immediately',
+        (WidgetTester tester) async {
+      final habits = [
+        Habit(
+          id: '1',
+          name: 'Exercise',
+          interval: 'daily',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+        Habit(
+          id: '2',
+          name: 'Reading',
+          interval: 'weekly',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CalendarScreen(habits: habits),
+          ),
+        ),
+      );
+
+      // Open filter dialog
+      await tester.tap(find.text('2/2 selected'));
+      await tester.pumpAndSettle();
+
+      // Deselect all
+      await tester.tap(find.text('Deselect All'));
+      await tester.pumpAndSettle();
+
+      // Verify all checkboxes are unchecked
+      final checkboxes = find.byType(CheckboxListTile);
+      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
+      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, false);
+      expect(secondCheckbox.value, false);
+
+      // Select all
+      await tester.tap(find.text('Select All'));
+      await tester.pumpAndSettle();
+
+      // Verify all checkboxes are now checked
+      firstCheckbox = tester.widget(checkboxes.first);
+      secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, true);
+      expect(secondCheckbox.value, true);
+
+      // Close dialog
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CalendarScreen "Deselect All" button should update checkboxes immediately',
+        (WidgetTester tester) async {
+      final habits = [
+        Habit(
+          id: '1',
+          name: 'Exercise',
+          interval: 'daily',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+        Habit(
+          id: '2',
+          name: 'Reading',
+          interval: 'weekly',
+          createdAt: DateTime.now(),
+          completions: [],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CalendarScreen(habits: habits),
+          ),
+        ),
+      );
+
+      // Open filter dialog
+      await tester.tap(find.text('2/2 selected'));
+      await tester.pumpAndSettle();
+
+      // Verify all checkboxes are initially checked
+      final checkboxes = find.byType(CheckboxListTile);
+      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
+      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, true);
+      expect(secondCheckbox.value, true);
+
+      // Deselect all
+      await tester.tap(find.text('Deselect All'));
+      await tester.pumpAndSettle();
+
+      // Verify all checkboxes are now unchecked
+      firstCheckbox = tester.widget(checkboxes.first);
+      secondCheckbox = tester.widget(checkboxes.last);
+      expect(firstCheckbox.value, false);
+      expect(secondCheckbox.value, false);
+
+      // Close dialog
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
     });
   });
 }

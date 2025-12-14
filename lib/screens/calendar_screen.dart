@@ -52,89 +52,84 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
-  void _selectAllHabits() {
-    setState(() {
-      _selectedHabitIds = widget.habits.map((h) => h.id).toSet();
-    });
-  }
-
-  void _deselectAllHabits() {
-    setState(() {
-      _selectedHabitIds.clear();
-    });
-  }
-
   void _showHabitFilterDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Habits'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: widget.habits.isEmpty
-              ? const Text('No habits available')
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            _selectAllHabits();
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Select All'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            _deselectAllHabits();
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Deselect All'),
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    Flexible(
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: widget.habits.map((habit) {
-                          return CheckboxListTile(
-                            title: Row(
-                              children: [
-                                Text(habit.icon, style: const TextStyle(fontSize: 18)),
-                                const SizedBox(width: 8),
-                                Expanded(child: Text(habit.name)),
-                              ],
-                            ),
-                            value: _selectedHabitIds.contains(habit.id),
-                            onChanged: (value) {
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Select Habits'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: widget.habits.isEmpty
+                ? const Text('No habits available')
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            onPressed: () {
                               setState(() {
-                                _toggleHabitSelection(habit.id);
+                                _selectedHabitIds = widget.habits.map((h) => h.id).toSet();
                               });
+                              setDialogState(() {});
                             },
-                            secondary: Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: Color(habit.colorValue),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                            child: const Text('Select All'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedHabitIds.clear();
+                              });
+                              setDialogState(() {});
+                            },
+                            child: const Text('Deselect All'),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+                      const Divider(),
+                      Flexible(
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: widget.habits.map((habit) {
+                            return CheckboxListTile(
+                              title: Row(
+                                children: [
+                                  Text(habit.icon, style: const TextStyle(fontSize: 18)),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(habit.name)),
+                                ],
+                              ),
+                              value: _selectedHabitIds.contains(habit.id),
+                              onChanged: (value) {
+                                setState(() {
+                                  _toggleHabitSelection(habit.id);
+                                });
+                                setDialogState(() {});
+                              },
+                              secondary: Container(
+                                width: 16,
+                                height: 16,
+                                decoration: BoxDecoration(
+                                  color: Color(habit.colorValue),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
       ),
     );
   }
