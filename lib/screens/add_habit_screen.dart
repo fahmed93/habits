@@ -18,13 +18,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   late final HabitStorage _storage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
-  String _selectedIcon = '✓';
 
   @override
   void initState() {
     super.initState();
     _storage = HabitStorage(userId: widget.userId);
-    _iconController.text = _selectedIcon;
+    _iconController.text = '✓';
   }
 
   final List<Map<String, String>> _intervals = [
