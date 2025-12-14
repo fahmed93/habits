@@ -127,6 +127,18 @@ ListTile(
 ### Streak Calculation
 Streaks count consecutive days backwards from today. Implementation in `HabitItem._getCurrentStreak()` sorts completions descending and checks for consecutive dates.
 
+### Calendar Single-Habit Filter
+CalendarScreen uses single-select filter (`String? _selectedHabitId`) with RadioListTile for habit selection. All calendar data displays for one habit at a time:
+```dart
+// Initially selects first habit
+_selectedHabitId = widget.habits.first.id;
+
+// Filter shows only selected habit
+List<Habit> get _filteredHabits => widget.habits
+  .where((habit) => habit.id == _selectedHabitId).toList();
+```
+Dialog title: "Select Habit" (singular). Filter chip shows selected habit's name and icon, clickable to open selector.
+
 ## UI Conventions
 - **Material 3**: Uses `ColorScheme.fromSeed(seedColor: Colors.deepPurple)` with `useMaterial3: true`
 - **Dismissible**: Swipe-to-delete requires `confirmDismiss` with AlertDialog
