@@ -6,6 +6,7 @@ import '../services/time_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
+import 'edit_habit_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screen.dart';
 
@@ -100,6 +101,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
   }
 
+  void _navigateToEditHabit(Habit habit) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditHabitScreen(
+          userId: widget.userId,
+          habit: habit,
+        ),
+      ),
+    );
+    if (result == true) {
+      await _loadHabits();
+    }
+  }
+
   Future<void> _handleLogout() async {
     final shouldLogout = await showDialog<bool>(
       context: context,
@@ -185,6 +201,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             onToggle: () => _toggleCompletion(habit),
             onToggleDate: (date) => _toggleCompletion(habit, date),
             onDelete: () => _deleteHabit(habit.id),
+            onEdit: () => _navigateToEditHabit(habit),
           );
         }),
       ],
