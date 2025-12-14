@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habits/models/habit.dart';
+import 'package:habits/screens/calendar_screen.dart';
 import 'package:habits/widgets/habit_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,12 +56,31 @@ void main() {
       expect(find.text(expectedMonth), findsOneWidget);
     });
 
-    testWidgets('HabitCalendar should display day names',
+    testWidgets('HabitCalendar should display day names in month view',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: HabitCalendar(habits: []),
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.month),
+          ),
+        ),
+      );
+
+      expect(find.text('Sun'), findsOneWidget);
+      expect(find.text('Mon'), findsOneWidget);
+      expect(find.text('Tue'), findsOneWidget);
+      expect(find.text('Wed'), findsOneWidget);
+      expect(find.text('Thu'), findsOneWidget);
+      expect(find.text('Fri'), findsOneWidget);
+      expect(find.text('Sat'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display day names in week view',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.week),
           ),
         ),
       );
@@ -173,7 +193,7 @@ void main() {
       expect(find.text('1'), findsOneWidget);
     });
 
-    testWidgets('HabitCalendar should display legend when habits exist',
+    testWidgets('HabitCalendar should display legend when habits exist in month view',
         (WidgetTester tester) async {
       final habit = Habit(
         id: '1',
@@ -186,7 +206,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: HabitCalendar(habits: [habit]),
+            body: HabitCalendar(habits: [habit], viewMode: CalendarViewMode.month),
           ),
         ),
       );
@@ -345,6 +365,88 @@ void main() {
 
       // Should not crash and should display a valid month
       expect(find.byType(HabitCalendar), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should display year view',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.year),
+          ),
+        ),
+      );
+
+      final now = DateTime.now();
+      expect(find.text('${now.year}'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar year view should show all months',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.year),
+          ),
+        ),
+      );
+
+      // Check for month names
+      expect(find.text('January'), findsOneWidget);
+      expect(find.text('February'), findsOneWidget);
+      expect(find.text('December'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar week view should show 7 days',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.week),
+          ),
+        ),
+      );
+
+      // Week view should render GridView with 14 children (7 headers + 7 days)
+      expect(find.byType(GridView), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should navigate weeks in week view',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.week),
+          ),
+        ),
+      );
+
+      // Navigate to next week
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+
+      // Should still render properly
+      expect(find.byType(HabitCalendar), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should navigate years in year view',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [], viewMode: CalendarViewMode.year),
+          ),
+        ),
+      );
+
+      final now = DateTime.now();
+      final nextYear = now.year + 1;
+
+      // Navigate to next year
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+
+      expect(find.text('$nextYear'), findsOneWidget);
     });
   });
 }
