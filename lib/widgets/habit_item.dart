@@ -145,8 +145,6 @@ class HabitItem extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final isCompleted = _isCompletedToday();
     final streak = _getCurrentStreak();
-    
-    print('HabitItem build: ${habit.name}, onEdit is null: ${onEdit == null}');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

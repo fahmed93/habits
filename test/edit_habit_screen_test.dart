@@ -112,6 +112,11 @@ void main() {
       // Clear the text field
       final textField = find.widgetWithText(TextFormField, 'Exercise');
       await tester.enterText(textField, '');
+      await tester.pump();
+      
+      // Scroll to make the Save Changes button visible
+      await tester.ensureVisible(find.text('Save Changes'));
+      await tester.pump();
       
       // Tap Save Changes button
       await tester.tap(find.text('Save Changes'));

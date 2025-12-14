@@ -72,13 +72,14 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Edit Habit'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -218,7 +219,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
                   );
                 }).toList(),
               ),
-              const Spacer(),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _saveHabit,
                 style: ElevatedButton.styleFrom(
@@ -232,6 +233,7 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
