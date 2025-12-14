@@ -6,6 +6,7 @@ class HabitItem extends StatelessWidget {
   final Habit habit;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
+  final VoidCallback? onEdit;
   final Function(DateTime)? onToggleDate; // New callback for toggling specific dates
 
   const HabitItem({
@@ -13,6 +14,7 @@ class HabitItem extends StatelessWidget {
     required this.habit,
     required this.onToggle,
     required this.onDelete,
+    this.onEdit,
     this.onToggleDate,
   });
 
@@ -179,13 +181,26 @@ class HabitItem extends StatelessWidget {
         },
         onDismissed: (direction) => onDelete(),
         child: ListTile(
-          title: Text(
-            habit.name,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              decoration: isCompleted ? TextDecoration.lineThrough : null,
-            ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  habit.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+              if (onEdit != null)
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: onEdit,
+                  tooltip: 'Edit Habit',
+                  color: Colors.grey[600],
+                ),
+            ],
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

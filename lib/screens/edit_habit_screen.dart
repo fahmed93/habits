@@ -1,0 +1,238 @@
+import 'package:flutter/material.dart';
+import '../models/habit.dart';
+import '../services/habit_storage.dart';
+
+class EditHabitScreen extends StatefulWidget {
+  final String userId;
+  final Habit habit;
+
+  const EditHabitScreen({
+    super.key,
+    required this.userId,
+    required this.habit,
+  });
+
+  @override
+  State<EditHabitScreen> createState() => _EditHabitScreenState();
+}
+
+class _EditHabitScreenState extends State<EditHabitScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _iconController = TextEditingController();
+  late final HabitStorage _storage;
+  late String _selectedInterval;
+  late int _selectedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _storage = HabitStorage(userId: widget.userId);
+    _nameController.text = widget.habit.name;
+    _iconController.text = widget.habit.icon;
+    _selectedInterval = widget.habit.interval;
+    _selectedColor = widget.habit.colorValue;
+  }
+
+  final List<Map<String, String>> _intervals = [
+    {'value': 'daily', 'label': 'Daily'},
+    {'value': 'weekly', 'label': 'Weekly'},
+    {'value': 'monthly', 'label': 'Monthly'},
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _iconController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveHabit() async {
+    if (_formKey.currentState!.validate()) {
+      final updatedHabit = widget.habit.copyWith(
+        name: _nameController.text.trim(),
+        interval: _selectedInterval,
+        colorValue: _selectedColor,
+        icon: _iconController.text.trim().isEmpty 
+            ? '✓' 
+            : _iconController.text.trim(),
+      );
+
+      await _storage.updateHabit(updatedHabit);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Edit Habit'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Habit Name',
+                  hintText: 'e.g., Exercise, Read, Meditate',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a habit name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Icon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _iconController.text.isEmpty ? '✓' : _iconController.text,
+                      style: const TextStyle(fontSize: 32),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _iconController,
+                      decoration: const InputDecoration(
+                        labelText: 'Emoji',
+                        hintText: 'Tap to select emoji',
+                        border: OutlineInputBorder(),
+                        helperText: 'Use your keyboard to pick an emoji',
+                      ),
+                      style: const TextStyle(fontSize: 24),
+                      maxLength: 10,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Interval',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Column(
+                children: _intervals.map((interval) {
+                  return RadioListTile<String>(
+                    title: Text(interval['label']!),
+                    value: interval['value']!,
+                    groupValue: _selectedInterval,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedInterval = value!;
+                      });
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Color',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: Habit.habitColors.map((colorValue) {
+                  final isSelected = _selectedColor == colorValue;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedColor = colorValue;
+                      });
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Color(colorValue),
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 3,
+                              )
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                  color:
+                    Color(colorValue).withOpacity(0.4),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 20,
+                            )
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _saveHabit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

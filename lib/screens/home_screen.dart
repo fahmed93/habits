@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../widgets/habit_calendar.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
+import 'edit_habit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -87,6 +88,21 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => AddHabitScreen(userId: widget.userId)),
+    );
+    if (result == true) {
+      await _loadHabits();
+    }
+  }
+
+  void _navigateToEditHabit(Habit habit) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditHabitScreen(
+          userId: widget.userId,
+          habit: habit,
+        ),
+      ),
     );
     if (result == true) {
       await _loadHabits();
@@ -197,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onToggle: () => _toggleCompletion(habit),
                         onToggleDate: (date) => _toggleCompletion(habit, date),
                         onDelete: () => _deleteHabit(habit.id),
+                        onEdit: () => _navigateToEditHabit(habit),
                       );
                     }),
                   ],
