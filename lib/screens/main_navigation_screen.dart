@@ -4,6 +4,7 @@ import '../models/habit.dart';
 import '../services/habit_storage.dart';
 import '../services/time_service.dart';
 import '../services/auth_service.dart';
+import '../services/test_data_service.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
 import 'edit_habit_screen.dart';
@@ -41,7 +42,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Future<void> _initializeApp() async {
     await _timeService.loadOffset();
+    await _initializeGuestUserData();
     await _loadHabits();
+  }
+
+  /// Initialize test data for guest user on first use
+  Future<void> _initializeGuestUserData() async {
+    // Only initialize for guest user
+    if (widget.userId != 'guest') {
+      return;
+    }
+
+    // Check if guest user already has habits
+    final existingHabits = await _storage.loadHabits();
+    if (existingHabits.isNotEmpty) {
+      return; // Guest user already has data
+    }
+
+    // Generate and save 5 random habits with 365 days of historical data
+    final testHabits = TestDataService.generateRandomHabits();
+    await _storage.saveHabits(testHabits);
   }
 
   Future<void> _loadHabits() async {
