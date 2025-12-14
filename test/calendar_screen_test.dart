@@ -73,8 +73,11 @@ void main() {
       expect(find.text('Month'), findsOneWidget);
       expect(find.text('Year'), findsOneWidget);
       
-      // Check for habit filter showing selected habit name
-      expect(find.text('Exercise'), findsOneWidget);
+      // Check for habit filter showing selected habit name (should be in ActionChip)
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen should switch view modes',
@@ -137,7 +140,7 @@ void main() {
       );
 
       // Tap on habit filter chip (should show first habit's name)
-      await tester.tap(find.text('Exercise'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
       // Check dialog appears with radio buttons
@@ -172,11 +175,14 @@ void main() {
         ),
       );
 
-      // Initially shows first habit
-      expect(find.text('Exercise'), findsOneWidget);
+      // Initially shows first habit in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
 
       // Open filter dialog
-      await tester.tap(find.text('Exercise'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
       // Select second habit
@@ -188,8 +194,11 @@ void main() {
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
 
-      // Check that selected habit changed to Reading
-      expect(find.text('Reading'), findsOneWidget);
+      // Check that selected habit changed to Reading in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Reading')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen should handle multiple habits',
@@ -227,8 +236,11 @@ void main() {
       );
 
       expect(find.byType(HabitCalendar), findsOneWidget);
-      // First habit should be selected
-      expect(find.text('Exercise'), findsOneWidget);
+      // First habit should be selected in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen empty state should use grey colors',
@@ -288,11 +300,14 @@ void main() {
         ),
       );
 
-      // Should show first habit by default
-      expect(find.text('Exercise'), findsOneWidget);
+      // Should show first habit by default in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
 
       // Open filter dialog
-      await tester.tap(find.text('Exercise'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
       // Select Reading
@@ -305,7 +320,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should now show Reading in the chip
-      expect(find.text('Reading'), findsOneWidget);
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Reading')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen should update radio buttons in real-time',
@@ -336,7 +354,7 @@ void main() {
       );
 
       // Open filter dialog
-      await tester.tap(find.text('Exercise'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
       // Verify first radio button is initially selected
