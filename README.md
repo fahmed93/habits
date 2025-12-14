@@ -5,6 +5,7 @@ A mobile habit tracker app built with Flutter with Firebase Authentication.
 ## Features
 
 - **Authentication**: Sign in with Google or Apple (iOS 13+)
+- **Guest Mode**: Skip sign-in for quick testing with pre-populated sample data
 - **User-specific data**: Each user's habits are private and separate
 - Create custom habits with different intervals (daily, weekly, monthly)
 - Track habit completion with a simple tap
@@ -72,7 +73,7 @@ lib/
 
 ## Usage
 
-1. **Sign in** with Google or Apple ID
+1. **Sign in** with Google or Apple ID, or tap **Skip Sign In** to try the app with sample data
 2. Tap the + button to add a new habit
 3. Enter the habit name and select an interval
 4. Tap the circle icon to mark the habit as complete for today
@@ -80,6 +81,15 @@ lib/
 6. **Access Settings** by tapping the settings icon in the app bar
 7. **Change Theme** by selecting Theme in settings and choosing Light, Dark, or System
 8. Tap the logout icon in the app bar to sign out
+
+### Guest Mode
+
+When you tap "Skip Sign In", the app automatically creates 5 sample habits with:
+- Random habit names (e.g., "Morning Exercise", "Read for 30 min", "Meditate")
+- Random emojis and colors
+- 365 days of historical completion data for demonstration purposes
+
+This allows you to explore the app's features without authentication.
 
 ## Authentication
 
