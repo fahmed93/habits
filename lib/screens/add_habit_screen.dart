@@ -14,6 +14,7 @@ class AddHabitScreen extends StatefulWidget {
 class _AddHabitScreenState extends State<AddHabitScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _iconController = TextEditingController();
   late final HabitStorage _storage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
@@ -23,6 +24,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   void initState() {
     super.initState();
     _storage = HabitStorage(userId: widget.userId);
+    _iconController.text = _selectedIcon;
   }
 
   final List<Map<String, String>> _intervals = [
@@ -31,14 +33,10 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     {'value': 'monthly', 'label': 'Monthly'},
   ];
 
-  final List<String> _habitIcons = [
-    '✓', '💪', '🏃', '📚', '🧘', '💧', '🎯', '⭐', '🔥', '✨',
-    '🎨', '✍️', '🎵', '🌱', '🌟', '💡', '🎓', '🏆', '❤️', '🌈',
-  ];
-
   @override
   void dispose() {
     _nameController.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 
@@ -51,7 +49,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         createdAt: DateTime.now(),
         completions: [],
         colorValue: _selectedColor,
-        icon: _selectedIcon,
+        icon: _iconController.text.trim().isEmpty 
+            ? '✓' 
+            : _iconController.text.trim(),
       );
 
       await _storage.addHabit(habit);
@@ -98,40 +98,51 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _habitIcons.map((icon) {
-                  final isSelected = _selectedIcon == icon;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIcon = icon;
-                      });
-                    },
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300]!,
-                          width: isSelected ? 2 : 1,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        icon,
-                        style: const TextStyle(fontSize: 24),
+              Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
                       ),
                     ),
-                  );
-                }).toList(),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _iconController.text.isEmpty ? '✓' : _iconController.text,
+                      style: const TextStyle(fontSize: 32),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _iconController,
+                      decoration: const InputDecoration(
+                        labelText: 'Emoji',
+                        hintText: 'Tap to select emoji',
+                        border: OutlineInputBorder(),
+                        helperText: 'Use your keyboard to pick an emoji',
+                      ),
+                      style: const TextStyle(fontSize: 24),
+                      maxLength: 2,
+                      onChanged: (value) {
+                        setState(() {
+                          // Update preview
+                        });
+                      },
+                      validator: (value) {
+                        if (value != null && value.length > 2) {
+                          return 'Please use only one emoji';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               const Text(
