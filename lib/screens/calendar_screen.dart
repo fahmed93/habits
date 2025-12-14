@@ -107,10 +107,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildFilterChips() {
-    final selectedHabit = _selectedHabitId != null
-        ? widget.habits.firstWhere((h) => h.id == _selectedHabitId,
-            orElse: () => widget.habits.first)
-        : null;
+    Habit? selectedHabit;
+    if (_selectedHabitId != null && widget.habits.isNotEmpty) {
+      try {
+        selectedHabit = widget.habits.firstWhere((h) => h.id == _selectedHabitId);
+      } catch (e) {
+        // If selected habit not found, fallback to first habit
+        selectedHabit = widget.habits.first;
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
