@@ -145,6 +145,8 @@ class HabitItem extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final isCompleted = _isCompletedToday();
     final streak = _getCurrentStreak();
+    
+    print('HabitItem build: ${habit.name}, onEdit is null: ${onEdit == null}');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -194,11 +196,15 @@ class HabitItem extends StatelessWidget {
                 ),
               ),
               if (onEdit != null)
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
+                TextButton.icon(
+                  icon: Icon(Icons.edit_outlined, size: 18, color: Color(habit.colorValue)),
+                  label: Text('Edit', style: TextStyle(color: Color(habit.colorValue))),
                   onPressed: onEdit,
-                  tooltip: 'Edit Habit',
-                  color: Colors.grey[600],
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                 ),
             ],
           ),
