@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:habits/models/habit.dart';
 import 'package:habits/services/test_data_service.dart';
 
 void main() {

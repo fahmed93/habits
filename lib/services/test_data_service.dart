@@ -3,6 +3,7 @@ import '../models/habit.dart';
 
 class TestDataService {
   static final Random _random = Random();
+  static const int _historicalDays = 365;
 
   // List of habit names for random selection
   static const List<String> habitNames = [
@@ -61,7 +62,7 @@ class TestDataService {
         id: id,
         name: selectedNames[i],
         interval: 'daily',
-        createdAt: now.subtract(const Duration(days: 365)),
+        createdAt: now.subtract(Duration(days: _historicalDays)),
         completions: _generate365DaysOfData(now),
         colorValue: color,
         icon: emoji,
@@ -78,12 +79,13 @@ class TestDataService {
   static List<DateTime> _generate365DaysOfData(DateTime endDate) {
     final completions = <DateTime>[];
     
-    // Generate completions for the past 365 days
+    // Generate completions for the past 365 days (from 365 days ago to yesterday)
     // Use a success rate between 50-85% to make it realistic
     final successRate = 0.50 + (_random.nextDouble() * 0.35);
     
-    for (int i = 0; i < 365; i++) {
-      final date = endDate.subtract(Duration(days: 365 - i));
+    for (int i = 0; i < _historicalDays; i++) {
+      // Calculate date: when i=0, we get (endDate - 365 days); when i=364, we get (endDate - 1 day)
+      final date = endDate.subtract(Duration(days: _historicalDays - i));
       final normalizedDate = DateTime(date.year, date.month, date.day);
       
       // Randomly decide if this day was completed based on success rate
