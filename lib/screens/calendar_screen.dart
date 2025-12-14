@@ -14,41 +14,41 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  Set<String> _selectedHabitIds = {};
+  String? _selectedHabitId;
   CalendarViewMode _viewMode = CalendarViewMode.month;
 
   @override
   void initState() {
     super.initState();
-    // Initially select all habits
-    _selectedHabitIds = widget.habits.map((h) => h.id).toSet();
+    // Initially select first habit if available
+    if (widget.habits.isNotEmpty) {
+      _selectedHabitId = widget.habits.first.id;
+    }
   }
 
   @override
   void didUpdateWidget(CalendarScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Update selected habits if habits list changes
+    // Update selected habit if habits list changes
     if (widget.habits.length != oldWidget.habits.length) {
       final currentIds = widget.habits.map((h) => h.id).toSet();
-      _selectedHabitIds = _selectedHabitIds.intersection(currentIds);
-      // Add new habits to selection
-      _selectedHabitIds.addAll(currentIds);
+      if (_selectedHabitId == null || !currentIds.contains(_selectedHabitId)) {
+        // Select first habit if current selection is invalid
+        _selectedHabitId = widget.habits.isNotEmpty ? widget.habits.first.id : null;
+      }
     }
   }
 
   List<Habit> get _filteredHabits {
+    if (_selectedHabitId == null) return [];
     return widget.habits
-        .where((habit) => _selectedHabitIds.contains(habit.id))
+        .where((habit) => habit.id == _selectedHabitId)
         .toList();
   }
 
-  void _toggleHabitSelection(String habitId) {
+  void _selectHabit(String habitId) {
     setState(() {
-      if (_selectedHabitIds.contains(habitId)) {
-        _selectedHabitIds.remove(habitId);
-      } else {
-        _selectedHabitIds.add(habitId);
-      }
+      _selectedHabitId = habitId;
     });
   }
 
@@ -57,70 +57,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Select Habits'),
+          title: const Text('Select Habit'),
           content: SizedBox(
             width: double.maxFinite,
             child: widget.habits.isEmpty
                 ? const Text('No habits available')
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedHabitIds = widget.habits.map((h) => h.id).toSet();
-                              });
-                              setDialogState(() {});
-                            },
-                            child: const Text('Select All'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedHabitIds.clear();
-                              });
-                              setDialogState(() {});
-                            },
-                            child: const Text('Deselect All'),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Flexible(
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: widget.habits.map((habit) {
-                            return CheckboxListTile(
-                              title: Row(
-                                children: [
-                                  Text(habit.icon, style: const TextStyle(fontSize: 18)),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(habit.name)),
-                                ],
-                              ),
-                              value: _selectedHabitIds.contains(habit.id),
-                              onChanged: (value) {
-                                setState(() {
-                                  _toggleHabitSelection(habit.id);
-                                });
-                                setDialogState(() {});
-                              },
-                              secondary: Container(
-                                width: 16,
-                                height: 16,
-                                decoration: BoxDecoration(
-                                  color: Color(habit.colorValue),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                : ListView(
+                    shrinkWrap: true,
+                    children: widget.habits.map((habit) {
+                      return RadioListTile<String>(
+                        title: Row(
+                          children: [
+                            Text(habit.icon, style: const TextStyle(fontSize: 18)),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(habit.name)),
+                          ],
                         ),
-                      ),
-                    ],
+                        value: habit.id,
+                        groupValue: _selectedHabitId,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              _selectHabit(value);
+                            }
+                          });
+                          setDialogState(() {});
+                        },
+                        secondary: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: Color(habit.colorValue),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
           ),
           actions: [
@@ -135,6 +107,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildFilterChips() {
+    final selectedHabit = _selectedHabitId != null
+        ? widget.habits.firstWhere((h) => h.id == _selectedHabitId,
+            orElse: () => widget.habits.first)
+        : null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -180,35 +157,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
           // Habit filter
           Row(
             children: [
-              const Text('Habits: ', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Habit: ', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(width: 8),
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      ActionChip(
-                        label: Text(
-                          '${_selectedHabitIds.length}/${widget.habits.length} selected',
+                      if (selectedHabit != null)
+                        ActionChip(
+                          label: Text(selectedHabit.name),
+                          avatar: Text(selectedHabit.icon),
+                          onPressed: _showHabitFilterDialog,
+                        )
+                      else
+                        ActionChip(
+                          label: const Text('Select a habit'),
+                          avatar: const Icon(Icons.filter_list, size: 18),
+                          onPressed: _showHabitFilterDialog,
                         ),
-                        avatar: const Icon(Icons.filter_list, size: 18),
-                        onPressed: _showHabitFilterDialog,
-                      ),
-                      if (_selectedHabitIds.length != widget.habits.length &&
-                          _selectedHabitIds.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        ...widget.habits
-                            .where((h) => _selectedHabitIds.contains(h.id))
-                            .map((habit) => Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: Chip(
-                                    label: Text(habit.name),
-                                    avatar: Text(habit.icon),
-                                    deleteIcon: const Icon(Icons.close, size: 18),
-                                    onDeleted: () => _toggleHabitSelection(habit.id),
-                                  ),
-                                )),
-                      ],
                     ],
                   ),
                 ),
