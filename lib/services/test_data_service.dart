@@ -48,7 +48,7 @@ class TestDataService {
     }
 
     for (int i = 0; i < 5; i++) {
-      // Generate unique ID
+      // Generate unique ID (same pattern as AddHabitScreen, with +i to prevent collisions)
       final id = (now.millisecondsSinceEpoch + i).toString();
       
       // Select random emoji
