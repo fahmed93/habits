@@ -127,14 +127,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                         helperText: 'Use your keyboard to pick an emoji',
                       ),
                       style: const TextStyle(fontSize: 24),
-                      maxLength: 2,
+                      maxLength: 10,
                       onChanged: (value) {
-                        setState(() {
-                          // Update preview
-                        });
+                        setState(() {});
                       },
                       validator: (value) {
-                        if (value != null && value.length > 2) {
+                        if (value != null && value.runes.length > 2) {
                           return 'Please use only one emoji';
                         }
                         return null;
