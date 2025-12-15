@@ -258,7 +258,7 @@ void main() {
       expect(find.byType(Wrap), findsNothing);
     });
 
-    testWidgets('HabitCalendar should display completion dots for completed habits',
+    testWidgets('HabitCalendar should render with completed habits',
         (WidgetTester tester) async {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
@@ -447,6 +447,73 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('$nextYear'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should fill day background with habit color when completed',
+        (WidgetTester tester) async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [today],
+        colorValue: 0xFF6366F1, // Indigo color
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // Find all Container widgets
+      final containers = tester.widgetList<Container>(find.byType(Container));
+      
+      // At least one container should have the habit's background color
+      final coloredContainers = containers.where((container) {
+        final decoration = container.decoration as BoxDecoration?;
+        return decoration?.color != null && 
+               decoration?.color?.value == habit.colorValue;
+      });
+      
+      expect(coloredContainers.isNotEmpty, true);
+    });
+
+    testWidgets('HabitCalendar should not fill background for uncompleted days',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [], // No completions
+        colorValue: 0xFF6366F1,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // Find all Container widgets
+      final containers = tester.widgetList<Container>(find.byType(Container));
+      
+      // No container should have the habit's background color (only transparent or null)
+      final coloredContainers = containers.where((container) {
+        final decoration = container.decoration as BoxDecoration?;
+        return decoration?.color != null && 
+               decoration?.color?.value == habit.colorValue;
+      });
+      
+      expect(coloredContainers.isEmpty, true);
     });
   });
 }
