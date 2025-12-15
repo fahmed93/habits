@@ -73,8 +73,11 @@ void main() {
       expect(find.text('Month'), findsOneWidget);
       expect(find.text('Year'), findsOneWidget);
       
-      // Check for habit filter
-      expect(find.text('1/1 selected'), findsOneWidget);
+      // Check for habit filter showing selected habit name (should be in ActionChip)
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen should switch view modes',
@@ -136,18 +139,16 @@ void main() {
         ),
       );
 
-      // Tap on habit filter chip
-      await tester.tap(find.text('2/2 selected'));
+      // Tap on habit filter chip (should show first habit's name)
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
-      // Check dialog appears
-      expect(find.text('Select Habits'), findsOneWidget);
-      expect(find.text('Select All'), findsOneWidget);
-      expect(find.text('Deselect All'), findsOneWidget);
-      expect(find.byType(CheckboxListTile), findsNWidgets(2));
+      // Check dialog appears with radio buttons
+      expect(find.text('Select Habit'), findsOneWidget);
+      expect(find.byType(RadioListTile<String>), findsNWidgets(2));
     });
 
-    testWidgets('CalendarScreen should filter habits',
+    testWidgets('CalendarScreen should select a single habit',
         (WidgetTester tester) async {
       final habits = [
         Habit(
@@ -174,21 +175,30 @@ void main() {
         ),
       );
 
+      // Initially shows first habit in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
+
       // Open filter dialog
-      await tester.tap(find.text('2/2 selected'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
-      // Uncheck one habit
-      final checkboxes = find.byType(CheckboxListTile);
-      await tester.tap(checkboxes.first);
+      // Select second habit
+      final radioButtons = find.byType(RadioListTile<String>);
+      await tester.tap(radioButtons.last);
       await tester.pumpAndSettle();
 
       // Close dialog
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
 
-      // Check that filter count updated
-      expect(find.text('1/2 selected'), findsOneWidget);
+      // Check that selected habit changed to Reading in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Reading')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen should handle multiple habits',
@@ -226,7 +236,11 @@ void main() {
       );
 
       expect(find.byType(HabitCalendar), findsOneWidget);
-      expect(find.text('3/3 selected'), findsOneWidget);
+      // First habit should be selected in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
     });
 
     testWidgets('CalendarScreen empty state should use grey colors',
@@ -259,7 +273,7 @@ void main() {
       expect(find.byType(Column), findsWidgets);
     });
 
-    testWidgets('CalendarScreen should show selected habits as chips',
+    testWidgets('CalendarScreen should show selected habit in chip',
         (WidgetTester tester) async {
       final habits = [
         Habit(
@@ -286,28 +300,33 @@ void main() {
         ),
       );
 
+      // Should show first habit by default in ActionChip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Exercise')
+      ), findsOneWidget);
+
       // Open filter dialog
-      await tester.tap(find.text('2/2 selected'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
-      // Deselect all habits
-      await tester.tap(find.text('Deselect All'));
-      await tester.pumpAndSettle();
-
-      // Select just Exercise
-      final checkboxes = find.byType(CheckboxListTile);
-      await tester.tap(checkboxes.first);
+      // Select Reading
+      final radioButtons = find.byType(RadioListTile<String>);
+      await tester.tap(radioButtons.last);
       await tester.pumpAndSettle();
 
       // Close dialog
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
 
-      // Should show Exercise chip when not all are selected
-      expect(find.widgetWithText(Chip, 'Exercise'), findsOneWidget);
+      // Should now show Reading in the chip
+      expect(find.descendant(
+        of: find.byType(ActionChip),
+        matching: find.text('Reading')
+      ), findsOneWidget);
     });
 
-    testWidgets('CalendarScreen should update checkboxes in real-time',
+    testWidgets('CalendarScreen should update radio buttons in real-time',
         (WidgetTester tester) async {
       final habits = [
         Habit(
@@ -335,145 +354,27 @@ void main() {
       );
 
       // Open filter dialog
-      await tester.tap(find.text('2/2 selected'));
+      await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
 
-      // Verify both checkboxes are initially checked
-      final checkboxes = find.byType(CheckboxListTile);
-      expect(checkboxes, findsNWidgets(2));
+      // Verify first radio button is initially selected
+      final radioButtons = find.byType(RadioListTile<String>);
+      expect(radioButtons, findsNWidgets(2));
       
-      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
-      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, true);
-      expect(secondCheckbox.value, true);
+      RadioListTile<String> firstRadio = tester.widget(radioButtons.first);
+      RadioListTile<String> secondRadio = tester.widget(radioButtons.last);
+      expect(firstRadio.groupValue, firstRadio.value);
+      expect(secondRadio.groupValue, firstRadio.value);
 
-      // Tap first checkbox to uncheck it
-      await tester.tap(checkboxes.first);
+      // Tap second radio button to select it
+      await tester.tap(radioButtons.last);
       await tester.pumpAndSettle();
 
-      // Verify first checkbox is now unchecked, second still checked
-      firstCheckbox = tester.widget(checkboxes.first);
-      secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, false);
-      expect(secondCheckbox.value, true);
-
-      // Tap first checkbox again to re-check it
-      await tester.tap(checkboxes.first);
-      await tester.pumpAndSettle();
-
-      // Verify first checkbox is checked again
-      firstCheckbox = tester.widget(checkboxes.first);
-      expect(firstCheckbox.value, true);
-
-      // Close dialog
-      await tester.tap(find.text('Done'));
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('CalendarScreen "Select All" button should update checkboxes immediately',
-        (WidgetTester tester) async {
-      final habits = [
-        Habit(
-          id: '1',
-          name: 'Exercise',
-          interval: 'daily',
-          createdAt: DateTime.now(),
-          completions: [],
-        ),
-        Habit(
-          id: '2',
-          name: 'Reading',
-          interval: 'weekly',
-          createdAt: DateTime.now(),
-          completions: [],
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CalendarScreen(habits: habits),
-          ),
-        ),
-      );
-
-      // Open filter dialog
-      await tester.tap(find.text('2/2 selected'));
-      await tester.pumpAndSettle();
-
-      // Deselect all
-      await tester.tap(find.text('Deselect All'));
-      await tester.pumpAndSettle();
-
-      // Verify all checkboxes are unchecked
-      final checkboxes = find.byType(CheckboxListTile);
-      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
-      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, false);
-      expect(secondCheckbox.value, false);
-
-      // Select all
-      await tester.tap(find.text('Select All'));
-      await tester.pumpAndSettle();
-
-      // Verify all checkboxes are now checked
-      firstCheckbox = tester.widget(checkboxes.first);
-      secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, true);
-      expect(secondCheckbox.value, true);
-
-      // Close dialog
-      await tester.tap(find.text('Done'));
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('CalendarScreen "Deselect All" button should update checkboxes immediately',
-        (WidgetTester tester) async {
-      final habits = [
-        Habit(
-          id: '1',
-          name: 'Exercise',
-          interval: 'daily',
-          createdAt: DateTime.now(),
-          completions: [],
-        ),
-        Habit(
-          id: '2',
-          name: 'Reading',
-          interval: 'weekly',
-          createdAt: DateTime.now(),
-          completions: [],
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CalendarScreen(habits: habits),
-          ),
-        ),
-      );
-
-      // Open filter dialog
-      await tester.tap(find.text('2/2 selected'));
-      await tester.pumpAndSettle();
-
-      // Verify all checkboxes are initially checked
-      final checkboxes = find.byType(CheckboxListTile);
-      CheckboxListTile firstCheckbox = tester.widget(checkboxes.first);
-      CheckboxListTile secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, true);
-      expect(secondCheckbox.value, true);
-
-      // Deselect all
-      await tester.tap(find.text('Deselect All'));
-      await tester.pumpAndSettle();
-
-      // Verify all checkboxes are now unchecked
-      firstCheckbox = tester.widget(checkboxes.first);
-      secondCheckbox = tester.widget(checkboxes.last);
-      expect(firstCheckbox.value, false);
-      expect(secondCheckbox.value, false);
+      // Verify second radio button is now selected
+      firstRadio = tester.widget(radioButtons.first);
+      secondRadio = tester.widget(radioButtons.last);
+      expect(firstRadio.groupValue, secondRadio.value);
+      expect(secondRadio.groupValue, secondRadio.value);
 
       // Close dialog
       await tester.tap(find.text('Done'));

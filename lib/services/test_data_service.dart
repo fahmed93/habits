@@ -62,7 +62,7 @@ class TestDataService {
         id: id,
         name: selectedNames[i],
         interval: 'daily',
-        createdAt: now.subtract(Duration(days: _historicalDays)),
+        createdAt: now.subtract(const Duration(days: _historicalDays)),
         completions: _generate365DaysOfData(now),
         colorValue: color,
         icon: emoji,
