@@ -434,6 +434,7 @@ class _CalendarDay extends StatelessWidget {
         completedHabits.map((h) => Color(h.colorValue)).toList();
     
     // Get the background color - use habit color if completed, otherwise transparent
+    // Note: Calendar uses single-habit filter, so completedHabits has at most 1 item
     final backgroundColor = !isFuture && habitColors.isNotEmpty
         ? habitColors.first
         : Colors.transparent;
