@@ -471,17 +471,24 @@ void main() {
         ),
       );
 
-      // Find all Container widgets
-      final containers = tester.widgetList<Container>(find.byType(Container));
+      // Find all Tooltip widgets (day containers are wrapped in Tooltips)
+      final tooltips = tester.widgetList<Tooltip>(find.byType(Tooltip));
       
-      // At least one container should have the habit's background color
-      final coloredContainers = containers.where((container) {
-        final decoration = container.decoration as BoxDecoration?;
-        return decoration?.color != null && 
-               decoration?.color?.value == habit.colorValue;
-      });
+      // At least one day container should have the habit's background color
+      bool foundColoredDayContainer = false;
+      for (final tooltip in tooltips) {
+        final container = tooltip.child as Container?;
+        if (container != null) {
+          final decoration = container.decoration as BoxDecoration?;
+          if (decoration?.color != null && 
+              decoration?.color?.value == habit.colorValue) {
+            foundColoredDayContainer = true;
+            break;
+          }
+        }
+      }
       
-      expect(coloredContainers.isNotEmpty, true);
+      expect(foundColoredDayContainer, true);
     });
 
     testWidgets('HabitCalendar should not fill background for uncompleted days',
@@ -503,17 +510,24 @@ void main() {
         ),
       );
 
-      // Find all Container widgets
-      final containers = tester.widgetList<Container>(find.byType(Container));
+      // Find all Tooltip widgets (day containers are wrapped in Tooltips)
+      final tooltips = tester.widgetList<Tooltip>(find.byType(Tooltip));
       
-      // No container should have the habit's background color (only transparent or null)
-      final coloredContainers = containers.where((container) {
-        final decoration = container.decoration as BoxDecoration?;
-        return decoration?.color != null && 
-               decoration?.color?.value == habit.colorValue;
-      });
+      // Check that no day container has the habit's background color
+      bool foundColoredDayContainer = false;
+      for (final tooltip in tooltips) {
+        final container = tooltip.child as Container?;
+        if (container != null) {
+          final decoration = container.decoration as BoxDecoration?;
+          if (decoration?.color != null && 
+              decoration?.color?.value == habit.colorValue) {
+            foundColoredDayContainer = true;
+            break;
+          }
+        }
+      }
       
-      expect(coloredContainers.isEmpty, true);
+      expect(foundColoredDayContainer, false);
     });
   });
 }
