@@ -207,17 +207,6 @@ void main() {
 
     testWidgets('HabitCalendar without onToggleDate callback should not crash',
         (WidgetTester tester) async {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      
-      final habit = Habit(
-        id: '1',
-        name: 'Exercise',
-        interval: 'daily',
-        createdAt: DateTime.now(),
-        completions: [],
-      );
-
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -230,6 +219,8 @@ void main() {
       );
 
       // Tapping should not crash even without callback
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
       final dayFinder = find.text('${today.day}');
       if (dayFinder.evaluate().isNotEmpty) {
         await tester.tap(dayFinder.first);
