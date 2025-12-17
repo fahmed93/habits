@@ -30,7 +30,7 @@ void main() {
       expect(find.text('About This App'), findsOneWidget);
       expect(
         find.textContaining(
-            'A mobile habit tracker app built with Flutter with Firebase Authentication'),
+            'A mobile habit tracker app built with Flutter and Firebase Authentication'),
         findsOneWidget,
       );
     });

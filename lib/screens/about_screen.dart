@@ -87,7 +87,7 @@ class AboutScreen extends StatelessWidget {
             iconColor: Theme.of(context).colorScheme.primary,
             title: 'About This App',
             content:
-                'A mobile habit tracker app built with Flutter with Firebase Authentication. Track your daily, weekly, and monthly habits to build better routines and achieve your goals.',
+                'A mobile habit tracker app built with Flutter and Firebase Authentication. Track your daily, weekly, and monthly habits to build better routines and achieve your goals.',
           ),
           const SizedBox(height: 16),
 
@@ -112,7 +112,8 @@ class AboutScreen extends StatelessWidget {
             icon: Icons.code_rounded,
             iconColor: Theme.of(context).colorScheme.secondary,
             title: 'Developer',
-            content: 'Built with ❤️ using Flutter',
+            content: 'Built with ❤️ using Flutter\n\n'
+                'This is an open source project created to help people build better habits and achieve their goals through consistent tracking and progress visualization.',
           ),
           const SizedBox(height: 16),
 
