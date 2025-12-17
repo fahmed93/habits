@@ -166,6 +166,14 @@ flutter test test/habit_test.dart  # Run specific test file
 flutter analyze          # Run linter (CI enforces)
 ```
 
+### Pre-Commit Checklist (REQUIRED)
+**Before any change is considered ready, you MUST:**
+1. Run `flutter test` and ensure ALL tests pass
+2. Run `flutter analyze` and fix ALL errors AND warnings
+3. This is part of the development process - no exceptions
+
+The CI pipeline enforces these checks, so fixing issues early prevents build failures.
+
 ### Common Tasks
 - **Add new feature**: Start with model changes, update storage if needed, then UI
 - **Modify date logic**: Check HabitItem widget for existing date normalization patterns
@@ -178,8 +186,12 @@ flutter analyze          # Run linter (CI enforces)
 - **CI**: GitHub Actions runs `flutter test` + `flutter analyze` on push/PR (see `.github/workflows/flutter-test.yml`)
 - No integration tests; manual testing on device/emulator
 
+**MANDATORY**: Before any code change is ready, run `flutter test` and `flutter analyze` and fix ALL errors and warnings. This is part of the development process and is enforced by CI.
+
 ## Linting
 Enforces `prefer_const_constructors` and `prefer_const_literals_to_create_immutables` via `analysis_options.yaml`. Use `const` wherever possible for constructors and collections.
+
+**IMPORTANT**: `flutter analyze` must be run before changes are ready, and ALL errors and warnings must be fixed. This is enforced by CI and is a mandatory part of the development process.
 
 ## Dependencies
 - `firebase_core: ^3.8.1`, `firebase_auth: ^5.3.4` - Firebase Authentication
