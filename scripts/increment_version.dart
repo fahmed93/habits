@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 
+// Semantic version - update this when releasing major/minor/patch versions
+const String semanticVersion = '1.0.0';
+
 void main() async {
   // Read current version
   final versionFile = File('version.json');
@@ -32,7 +35,7 @@ void main() async {
 
 class AppVersion {
   static const int buildNumber = $buildNumber;
-  static const String version = '1.0.0+$buildNumber';
+  static const String version = '$semanticVersion+$buildNumber';
 }
 ''';
   
