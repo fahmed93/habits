@@ -471,20 +471,21 @@ void main() {
         ),
       );
 
-      // Find all Tooltip widgets (day containers are wrapped in Tooltips)
-      final tooltips = tester.widgetList<Tooltip>(find.byType(Tooltip));
+      // Find containers that are descendants of Tooltips (calendar day cells)
+      final dayContainers = find.descendant(
+        of: find.byType(Tooltip),
+        matching: find.byType(Container),
+      );
       
       // At least one day container should have the habit's background color
       bool foundColoredDayContainer = false;
-      for (final tooltip in tooltips) {
-        final container = tooltip.child as Container?;
-        if (container != null) {
-          final decoration = container.decoration as BoxDecoration?;
-          if (decoration?.color != null && 
-              decoration?.color?.value == habit.colorValue) {
-            foundColoredDayContainer = true;
-            break;
-          }
+      for (final element in dayContainers.evaluate()) {
+        final container = element.widget as Container;
+        final decoration = container.decoration as BoxDecoration?;
+        if (decoration?.color != null && 
+            decoration?.color?.value == habit.colorValue) {
+          foundColoredDayContainer = true;
+          break;
         }
       }
       
@@ -510,20 +511,23 @@ void main() {
         ),
       );
 
-      // Find all Tooltip widgets (day containers are wrapped in Tooltips)
-      final tooltips = tester.widgetList<Tooltip>(find.byType(Tooltip));
+      // Find containers that are descendants of Tooltips (calendar day cells)
+      final dayContainers = find.descendant(
+        of: find.byType(Tooltip),
+        matching: find.byType(Container),
+      );
       
-      // Check that no day container has the habit's background color
+      // Check that no day container has the habit's background color as a solid fill
+      // (the legend will have small colored circles, but day cells should be transparent)
       bool foundColoredDayContainer = false;
-      for (final tooltip in tooltips) {
-        final container = tooltip.child as Container?;
-        if (container != null) {
-          final decoration = container.decoration as BoxDecoration?;
-          if (decoration?.color != null && 
-              decoration?.color?.value == habit.colorValue) {
-            foundColoredDayContainer = true;
-            break;
-          }
+      for (final element in dayContainers.evaluate()) {
+        final container = element.widget as Container;
+        final decoration = container.decoration as BoxDecoration?;
+        if (decoration?.color != null && 
+            decoration?.color != Colors.transparent &&
+            decoration?.color?.value == habit.colorValue) {
+          foundColoredDayContainer = true;
+          break;
         }
       }
       
