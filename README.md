@@ -120,4 +120,12 @@ This app is automatically deployed to GitHub Pages when changes are pushed to th
 
 **Live Demo:** https://fahmed93.github.io/habits/
 
+### Auto-Incrementing Version
+
+The app uses an auto-incrementing build version system:
+- Each deployment to GitHub Pages automatically increments the build number
+- The version is displayed on the About page in the format `1.0.0+{buildNumber}`
+- The build number is stored in `version.json` and generated code in `lib/generated/version.dart`
+- The GitHub Actions workflow runs `scripts/increment_version.dart` before each build
+
 For deployment configuration and troubleshooting, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

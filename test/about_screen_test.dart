@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habits/screens/about_screen.dart';
+import 'package:habits/generated/version.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,7 @@ void main() {
 
       expect(find.text('About'), findsOneWidget);
       expect(find.text('Habit Tracker'), findsOneWidget);
-      expect(find.text('Version 1.0.0'), findsOneWidget);
+      expect(find.text('Version ${AppVersion.version}'), findsOneWidget);
     });
 
     testWidgets('AboutScreen should display app description',

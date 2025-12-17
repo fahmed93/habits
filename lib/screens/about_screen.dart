@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habits/generated/version.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -70,7 +71,7 @@ class AboutScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Version 1.0.0',
+                  'Version ${AppVersion.version}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
