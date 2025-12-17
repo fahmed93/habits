@@ -185,25 +185,43 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.check_circle_outline,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No habits yet',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[600],
+            Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).colorScheme.primaryContainer,
+                    Theme.of(context).colorScheme.secondaryContainer,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                size: 70,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 32),
             Text(
-              'Tap the + button to add a habit',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
+              'No habits yet',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Text(
+                'Start building better habits today.\nTap the button below to create your first habit!',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -212,7 +230,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       children: [
         ...List.generate(_habits.length, (index) {
           final habit = _habits[index];
@@ -224,6 +242,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             onEdit: () => _navigateToEditHabit(habit),
           );
         }),
+        const SizedBox(height: 80), // Extra space for FAB
       ],
     );
   }
@@ -237,35 +256,79 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: 'Settings',
-          onPressed: _navigateToSettings,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primaryContainer,
+                Theme.of(context).colorScheme.surface,
+              ],
+            ),
+          ),
+        ),
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.settings_rounded),
+            tooltip: 'Settings',
+            onPressed: _navigateToSettings,
+          ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_selectedIndex == 0 ? 'Habit Tracker' : 'Calendar'),
+            Text(
+              _selectedIndex == 0 ? 'My Habits' : 'Calendar',
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 22,
+                letterSpacing: -0.5,
+              ),
+            ),
             Text(
               timeOffset > 0
                   ? '$formattedDate (+${timeOffset}h)'
                   : formattedDate,
-              style:
-                  const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.access_time),
-            tooltip: '+24 hours',
-            onPressed: _add24Hours,
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.access_time_rounded),
+              tooltip: '+24 hours',
+              onPressed: _add24Hours,
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign Out',
-            onPressed: _handleLogout,
+          Container(
+            margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.logout_rounded),
+              tooltip: 'Sign Out',
+              onPressed: _handleLogout,
+            ),
           ),
         ],
       ),
@@ -275,25 +338,59 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               ? _buildHabitsListView()
               : CalendarScreen(habits: _habits),
       floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: _navigateToAddHabit,
-              tooltip: 'Add Habit',
-              child: const Icon(Icons.add),
+          ? Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton.extended(
+                onPressed: _navigateToAddHabit,
+                icon: const Icon(Icons.add_rounded),
+                label: const Text(
+                  'Add Habit',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
             )
           : null,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onNavigationItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Habits',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onNavigationItemTapped,
+          elevation: 0,
+          height: 70,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.grid_view_rounded),
+              selectedIcon: Icon(Icons.grid_view_rounded),
+              label: 'Habits',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.calendar_today_rounded),
+              selectedIcon: Icon(Icons.calendar_month_rounded),
+              label: 'Calendar',
+            ),
+          ],
+        ),
       ),
     );
   }
