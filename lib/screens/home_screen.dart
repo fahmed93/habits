@@ -134,6 +134,99 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  List<DateTime> _getLast5DaysFrom(DateTime today) {
+    return List.generate(5, (index) {
+      return today.subtract(Duration(days: 4 - index));
+    });
+  }
+
+  Widget _buildDateHeader(DateTime today) {
+    final dates = _getLast5DaysFrom(today);
+    final dateFormat = DateFormat('M/d');
+    
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          // Left side: Empty space for habit name
+          const Expanded(
+            flex: 3,
+            child: SizedBox(),
+          ),
+          const SizedBox(width: 16),
+          // Right side: Date columns
+          Expanded(
+            flex: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: dates.map((date) {
+                final isToday = date.year == today.year &&
+                               date.month == today.month &&
+                               date.day == today.day;
+                return Expanded(
+                  child: Center(
+                    child: Text(
+                      dateFormat.format(date),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                        color: isToday 
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHabitsGrid() {
+    final now = _timeService.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return CustomScrollView(
+      slivers: [
+        // Sticky date header
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _DateHeaderDelegate(
+            child: _buildDateHeader(today),
+            height: 50,
+          ),
+        ),
+        // Habit calendar
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: HabitCalendar(habits: _habits),
+          ),
+        ),
+        // Habit items
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final habit = _habits[index];
+              return HabitItem(
+                habit: habit,
+                onToggle: () => _toggleCompletion(habit),
+                onToggleDate: (date) => _toggleCompletion(habit, date),
+                onDelete: () => _deleteHabit(habit.id),
+                onEdit: () => _navigateToEditHabit(habit),
+              );
+            },
+            childCount: _habits.length,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = _timeService.now();
@@ -201,28 +294,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 )
-              : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    HabitCalendar(habits: _habits),
-                    const SizedBox(height: 8),
-                    ...List.generate(_habits.length, (index) {
-                      final habit = _habits[index];
-                      return HabitItem(
-                        habit: habit,
-                        onToggle: () => _toggleCompletion(habit),
-                        onToggleDate: (date) => _toggleCompletion(habit, date),
-                        onDelete: () => _deleteHabit(habit.id),
-                        onEdit: () => _navigateToEditHabit(habit),
-                      );
-                    }),
-                  ],
-                ),
+              : _buildHabitsGrid(),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddHabit,
         tooltip: 'Add Habit',
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+// Delegate for sticky date header
+class _DateHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _DateHeaderDelegate({required this.child, required this.height});
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(_DateHeaderDelegate oldDelegate) {
+    return oldDelegate.child != child || oldDelegate.height != height;
   }
 }
