@@ -32,7 +32,7 @@ void main() {
         icon: '✓',
       );
 
-      final testSettings = const NotificationSettings(
+      const testSettings = NotificationSettings(
         enabled: true,
         reminderTime: '09:00',
         dailyReminder: true,
