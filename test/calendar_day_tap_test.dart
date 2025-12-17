@@ -15,6 +15,10 @@ void main() {
   group('Calendar Day Tap Tests', () {
     testWidgets('Tapping a calendar day in month view should call onToggleDate',
         (WidgetTester tester) async {
+      // Increase viewport size to accommodate calendar widget
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       
@@ -43,6 +47,8 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
+
       // Find a calendar day (the GestureDetector wrapping the day)
       // We'll tap on the day that shows today's date
       final dayFinder = find.text('${today.day}');
@@ -61,6 +67,10 @@ void main() {
 
     testWidgets('Tapping a calendar day in week view should call onToggleDate',
         (WidgetTester tester) async {
+      // Increase viewport size to accommodate calendar widget
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       
@@ -89,6 +99,8 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
+
       // Switch to week view
       await tester.tap(find.text('Week'));
       await tester.pumpAndSettle();
@@ -109,6 +121,10 @@ void main() {
 
     testWidgets('Tapping a calendar day should toggle completion status',
         (WidgetTester tester) async {
+      // Increase viewport size to accommodate calendar widget
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       
@@ -148,6 +164,8 @@ void main() {
           ),
         ),
       );
+
+      await tester.pumpAndSettle();
 
       // Initially, habit should not be completed
       expect(completions.length, 0);
