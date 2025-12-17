@@ -6,11 +6,13 @@ import '../screens/calendar_screen.dart';
 class HabitCalendar extends StatefulWidget {
   final List<Habit> habits;
   final CalendarViewMode viewMode;
+  final Function(Habit, DateTime)? onToggleDate;
 
   const HabitCalendar({
     super.key,
     required this.habits,
     this.viewMode = CalendarViewMode.month,
+    this.onToggleDate,
   });
 
   @override
@@ -123,10 +125,13 @@ class _HabitCalendarState extends State<HabitCalendar> {
       dayWidgets.add(
         _CalendarDay(
           day: day,
+          date: date,
           completedHabits: completedHabits,
           totalHabits: widget.habits.length,
           isToday: isToday,
           isFuture: isFuture,
+          allHabits: widget.habits,
+          onToggleDate: widget.onToggleDate,
         ),
       );
     }
@@ -172,10 +177,13 @@ class _HabitCalendarState extends State<HabitCalendar> {
       dayWidgets.add(
         _CalendarDay(
           day: date.day,
+          date: date,
           completedHabits: completedHabits,
           totalHabits: widget.habits.length,
           isToday: isToday,
           isFuture: isFuture,
+          allHabits: widget.habits,
+          onToggleDate: widget.onToggleDate,
         ),
       );
     }
@@ -414,17 +422,23 @@ class _HabitCalendarState extends State<HabitCalendar> {
 
 class _CalendarDay extends StatelessWidget {
   final int day;
+  final DateTime date;
   final List<Habit> completedHabits;
   final int totalHabits;
   final bool isToday;
   final bool isFuture;
+  final List<Habit> allHabits;
+  final Function(Habit, DateTime)? onToggleDate;
 
   const _CalendarDay({
     required this.day,
+    required this.date,
     required this.completedHabits,
     required this.totalHabits,
     required this.isToday,
     required this.isFuture,
+    required this.allHabits,
+    this.onToggleDate,
   });
 
   @override
@@ -455,28 +469,37 @@ class _CalendarDay extends StatelessWidget {
           : completionCount == 0
               ? 'No completions'
               : completedHabits.map((h) => h.name).join(", "),
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(6),
-          border: isToday
-              ? Border.all(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2,
-                )
-              : Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                  width: 0.5,
-                ),
-        ),
-        child: Center(
-          child: Text(
-            '$day',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-              color: textColor,
+      child: GestureDetector(
+        onTap: () {
+          // Only allow toggling for non-future dates
+          if (!isFuture && onToggleDate != null && allHabits.isNotEmpty) {
+            // Toggle the first habit (since calendar uses single-habit filter)
+            onToggleDate!(allHabits.first, date);
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(6),
+            border: isToday
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  )
+                : Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 0.5,
+                  ),
+          ),
+          child: Center(
+            child: Text(
+              '$day',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                color: textColor,
+              ),
             ),
           ),
         ),
