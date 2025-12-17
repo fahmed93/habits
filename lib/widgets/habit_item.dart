@@ -85,10 +85,33 @@ class _HabitItemState extends State<HabitItem> {
     return streak;
   }
 
+  String _getStreakUnitDisplay(int streak, String interval) {
+    String unit;
+    switch (interval) {
+      case 'daily':
+        unit = 'day';
+        break;
+      case 'weekly':
+        unit = 'week';
+        break;
+      case 'monthly':
+        unit = 'month';
+        break;
+      default:
+        unit = 'day';
+    }
+    return '$streak $unit${streak > 1 ? 's' : ''}';
+  }
+
   Widget _buildDayIndicator(DateTime date, bool isToday, BuildContext context) {
     final isCompleted = _isCompletedOnDate(date);
-    final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.weekday % 7];
-    final monthDay = '${date.month}/${date.day}';
+    // DateTime.weekday: Monday=1, Tuesday=2, ..., Sunday=7
+    // We need: Sunday=0, Monday=1, ..., Saturday=6 for array indexing
+    final dayIndex = date.weekday % 7;  // This converts Sunday(7) to 0, Monday(1) to 1, etc.
+    final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayIndex];
+    
+    // Use fixed size for all squares to maintain alignment
+    const size = 52.0;
     
     return GestureDetector(
       onTap: () {
@@ -99,78 +122,63 @@ class _HabitItemState extends State<HabitItem> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              dayOfWeek,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
-                color: isToday 
-                    ? Color(widget.habit.colorValue) 
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                letterSpacing: 0.5,
-              ),
+        width: size,
+        height: size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: isCompleted 
+                ? Color(widget.habit.colorValue)
+                : Theme.of(context).colorScheme.surfaceVariant,
+            border: Border.all(
+              color: isToday 
+                  ? Color(widget.habit.colorValue) 
+                  : Colors.transparent,
+              width: 2,
             ),
-            const SizedBox(height: 6),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: isCompleted 
-                    ? Color(widget.habit.colorValue)
-                    : Theme.of(context).colorScheme.surfaceVariant,
-                border: Border.all(
-                  color: isToday 
-                      ? Color(widget.habit.colorValue) 
-                      : Colors.transparent,
-                  width: 2,
-                ),
-                boxShadow: isCompleted
-                    ? [
-                        BoxShadow(
-                          color: Color(widget.habit.colorValue).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ]
-                    : null,
-              ),
-              alignment: Alignment.center,
-              child: isCompleted
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    )
-                  : Text(
-                      monthDay,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+            boxShadow: isCompleted
+                ? [
+                    BoxShadow(
+                      color: Color(widget.habit.colorValue).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-            ),
-          ],
+                  ]
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: isCompleted
+              ? Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: isToday ? 30.0 : 24.0,
+                )
+              : Text(
+                  dayOfWeek,
+                  style: TextStyle(
+                    fontSize: isToday ? 12.0 : 10.0,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
         ),
-      ),
     );
   }
 
   List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
     final last5Days = _getLast5DaysFrom(today);
     
-    return last5Days.map((date) {
+    return List.generate(last5Days.length, (i) {
+      final date = last5Days[i];
       final isToday = date.year == today.year &&
                      date.month == today.month &&
                      date.day == today.day;
-      return _buildDayIndicator(date, isToday, context);
-    }).toList();
+      return Expanded(
+        child: Align(
+          alignment: Alignment.center,
+          child: _buildDayIndicator(date, isToday, context),
+        ),
+      );
+    });
   }
 
   @override
@@ -181,21 +189,34 @@ class _HabitItemState extends State<HabitItem> {
     final streak = _getCurrentStreak();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      elevation: 1,
       shadowColor: Color(widget.habit.colorValue).withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Dismissible(
           key: Key(widget.habit.id),
-          direction: DismissDirection.endToStart,
+          direction: DismissDirection.horizontal,
           background: Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(left: 24),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade400,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.edit_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+          secondaryBackground: Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 24),
             decoration: BoxDecoration(
               color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.delete_rounded,
@@ -204,36 +225,50 @@ class _HabitItemState extends State<HabitItem> {
             ),
           ),
           confirmDismiss: (direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  title: const Text('Delete Habit'),
-                  content: const Text('Are you sure you want to delete this habit?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Cancel'),
+            if (direction == DismissDirection.startToEnd) {
+              // Edit action - don't dismiss, just trigger edit
+              if (widget.onEdit != null) {
+                widget.onEdit!();
+              }
+              return false;
+            } else if (direction == DismissDirection.endToStart) {
+              // Delete action - show confirmation dialog
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    title: const Text('Delete Habit'),
+                    content: const Text('Are you sure you want to delete this habit?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
                       ),
-                      child: const Text('Delete'),
-                    ),
-                  ],
-                );
-              },
-            );
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            return false;
           },
-          onDismissed: (direction) => widget.onDelete(),
+          onDismissed: (direction) {
+            if (direction == DismissDirection.endToStart) {
+              widget.onDelete();
+            }
+          },
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -244,153 +279,137 @@ class _HabitItemState extends State<HabitItem> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
+              padding: const EdgeInsets.all(12),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header row
-                  Row(
-                    children: [
-                      // Icon with gradient background
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(widget.habit.colorValue),
-                              Color(widget.habit.colorValue).withOpacity(0.7),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(widget.habit.colorValue).withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            widget.habit.icon,
-                            style: const TextStyle(fontSize: 28),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Title and interval
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  // Left side: Icon, Name, and Interval
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              widget.habit.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                decoration: isCompleted ? TextDecoration.lineThrough : null,
-                                decorationThickness: 2,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(widget.habit.colorValue).withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    _getIntervalDisplay(),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(widget.habit.colorValue),
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
+                            // Icon with gradient background
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(widget.habit.colorValue),
+                                    Color(widget.habit.colorValue).withOpacity(0.7),
+                                  ],
                                 ),
-                                if (streak > 0) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xFFFF6B35).withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text(
-                                          '🔥',
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '$streak ${widget.habit.interval == 'daily' ? 'day' : widget.habit.interval == 'weekly' ? 'week' : 'month'}${streak > 1 ? 's' : ''}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(widget.habit.colorValue).withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
-                              ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.habit.icon,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Habit name
+                            Expanded(
+                              child: Text(
+                                widget.habit.name,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  decoration: isCompleted ? TextDecoration.lineThrough : null,
+                                  decorationThickness: 2,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      // Edit button
-                      if (widget.onEdit != null)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(widget.habit.colorValue).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit_rounded,
-                              color: Color(widget.habit.colorValue),
-                              size: 20,
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            // Interval badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(widget.habit.colorValue).withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                _getIntervalDisplay(),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(widget.habit.colorValue),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                             ),
-                            onPressed: widget.onEdit,
-                            tooltip: 'Edit',
-                          ),
+                            // Streak badge
+                            if (streak > 0) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(6),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFFF6B35).withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      '🔥',
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      _getStreakUnitDisplay(streak, widget.habit.interval),
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // 5-day completion view
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(16),
+                      ],
                     ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Right side: 5-day completion view
+                  Expanded(
+                    flex: 5,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: _buildDayIndicators(today, context),
                     ),
                   ),

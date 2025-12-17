@@ -113,3 +113,11 @@ Each user's habits are stored locally but scoped to their user ID, ensuring data
 For complete authentication setup and configuration instructions, see:
 - [docs/AUTH_README.md](docs/AUTH_README.md) - Complete authentication guide
 - [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) - Detailed Firebase setup instructions
+
+## Deployment
+
+This app is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
+
+**Live Demo:** https://fahmed93.github.io/habits/
+
+For deployment configuration and troubleshooting, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

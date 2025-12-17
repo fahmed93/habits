@@ -459,5 +459,41 @@ void main() {
       expect(find.text('🔥'), findsOneWidget);
       expect(find.text('1 month'), findsOneWidget);
     });
+
+    testWidgets('HabitItem should call onEdit when swiped right and not dismiss',
+        (WidgetTester tester) async {
+      bool editCalled = false;
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+              onEdit: () {
+                editCalled = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Swipe right to edit
+      await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+      await tester.pumpAndSettle();
+
+      expect(editCalled, true);
+      // Habit item should still be present (not dismissed)
+      expect(find.byType(HabitItem), findsOneWidget);
+      expect(find.text('Exercise'), findsOneWidget);
+    });
   });
 }

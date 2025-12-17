@@ -282,5 +282,68 @@ void main() {
       expect(updatedHabit.colorValue, habit.colorValue);
       expect(updatedHabit.icon, habit.icon);
     });
+
+    test('Habit toJson and fromJson should handle categoryId correctly', () {
+      final habit = Habit(
+        id: '123',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime(2024, 1, 1),
+        completions: [],
+        categoryId: 'health',
+      );
+
+      final json = habit.toJson();
+      final habitFromJson = Habit.fromJson(json);
+
+      expect(habitFromJson.categoryId, 'health');
+      expect(json['categoryId'], 'health');
+    });
+
+    test('Habit fromJson should handle missing categoryId', () {
+      final json = {
+        'id': '123',
+        'name': 'Exercise',
+        'interval': 'daily',
+        'createdAt': DateTime(2024, 1, 1).toIso8601String(),
+        'completions': [],
+      };
+
+      final habitFromJson = Habit.fromJson(json);
+      expect(habitFromJson.categoryId, null);
+    });
+
+    test('Habit copyWith should update categoryId', () {
+      final habit = Habit(
+        id: '123',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime(2024, 1, 1),
+        completions: [],
+        categoryId: 'health',
+      );
+
+      final updatedHabit = habit.copyWith(categoryId: 'productivity');
+
+      expect(updatedHabit.categoryId, 'productivity');
+      expect(updatedHabit.name, habit.name);
+    });
+
+    test('Habit with null categoryId should work correctly', () {
+      final habit = Habit(
+        id: '123',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime(2024, 1, 1),
+        completions: [],
+        categoryId: null,
+      );
+
+      final json = habit.toJson();
+      final habitFromJson = Habit.fromJson(json);
+
+      expect(habit.categoryId, null);
+      expect(habitFromJson.categoryId, null);
+    });
   });
 }

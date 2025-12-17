@@ -9,6 +9,10 @@ Users can create new habits with:
   - Daily: Track every day
   - Weekly: Track every week
   - Monthly: Track every month
+- **Category Selection**: Organize habits by category (optional):
+  - 8 predefined categories: Health & Fitness, Mindfulness, Productivity, Learning, Creativity, Social, Finance, Home & Chores
+  - Support for custom categories (future enhancement)
+  - Each category has a unique icon
 - **Color Selection**: Choose from 12 vibrant colors to personalize each habit
 - **Icon/Emoji Selection**: Choose from 24 emoji icons to visually represent the habit
   - Fitness: 💪 🏃 🧘 🏋️ 🚴 🏊
@@ -116,6 +120,7 @@ All data is saved locally:
   createdAt: DateTime,  // When habit was created
   colorValue: int,      // Color as int for JSON serialization
   icon: String,         // Emoji icon for visual identification
+  categoryId: String?,  // Optional category association
   completions: [        // List of completion dates
     DateTime,
     DateTime,
