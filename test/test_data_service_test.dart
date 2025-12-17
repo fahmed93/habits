@@ -6,17 +6,17 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('TestDataService Tests', () {
-    test('generateRandomHabits should create exactly 5 habits', () {
+    test('generateRandomHabits should create exactly 15 habits', () {
       final habits = TestDataService.generateRandomHabits();
       
-      expect(habits.length, 5);
+      expect(habits.length, 15);
     });
 
     test('generated habits should have unique names', () {
       final habits = TestDataService.generateRandomHabits();
       final names = habits.map((h) => h.name).toSet();
       
-      expect(names.length, 5); // All names should be unique
+      expect(names.length, 15); // All names should be unique
     });
 
     test('generated habits should have valid properties', () {

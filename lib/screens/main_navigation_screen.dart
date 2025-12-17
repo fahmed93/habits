@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants.dart';
 import '../models/habit.dart';
+import '../models/category.dart';
 import '../services/habit_storage.dart';
+import '../services/category_storage.dart';
 import '../services/time_service.dart';
 import '../services/auth_service.dart';
 import '../services/test_data_service.dart';
@@ -28,9 +30,11 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late final HabitStorage _storage;
+  late final CategoryStorage _categoryStorage;
   final TimeService _timeService = TimeService();
   final AuthService _authService = AuthService();
   List<Habit> _habits = [];
+  List<Category> _categories = [];
   bool _isLoading = true;
   int _selectedIndex = 0;
 
@@ -38,13 +42,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _storage = HabitStorage(userId: widget.userId);
+    _categoryStorage = CategoryStorage(userId: widget.userId);
     _initializeApp();
   }
 
   Future<void> _initializeApp() async {
     await _timeService.loadOffset();
     await _initializeGuestUserData();
-    await _loadHabits();
+    await _loadData();
   }
 
   /// Initialize test data for guest user on first use
@@ -60,9 +65,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       return; // Guest user already has data
     }
 
-    // Generate and save 5 random habits with 365 days of historical data
+    // Generate and save 15 random habits with 365 days of historical data
     final testHabits = TestDataService.generateRandomHabits();
     await _storage.saveHabits(testHabits);
+  }
+
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+    final habits = await _storage.loadHabits();
+    final categories = await _categoryStorage.loadAllCategories();
+    setState(() {
+      _habits = habits;
+      _categories = categories;
+      _isLoading = false;
+    });
   }
 
   Future<void> _loadHabits() async {
@@ -180,6 +196,88 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
+  // Group habits by category
+  Map<String, List<Habit>> _groupHabitsByCategory() {
+    final grouped = <String, List<Habit>>{};
+    
+    for (final habit in _habits) {
+      final categoryId = habit.categoryId ?? 'uncategorized';
+      grouped.putIfAbsent(categoryId, () => []).add(habit);
+    }
+    
+    return grouped;
+  }
+
+  // Get category by ID
+  Category? _getCategoryById(String categoryId) {
+    if (categoryId == 'uncategorized') return null;
+    try {
+      return _categories.firstWhere((c) => c.id == categoryId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Get the last 5 days including today
+  List<DateTime> _getLast5DaysFrom(DateTime today) {
+    return List.generate(5, (index) {
+      return today.subtract(Duration(days: 4 - index));
+    });
+  }
+
+  // Build the sticky date header showing last 5 days
+  Widget _buildDateHeader(DateTime today) {
+    final dates = _getLast5DaysFrom(today);
+    final dateFormat = DateFormat('M/d');
+    
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      margin: const EdgeInsets.symmetric(horizontal: 16), // Match Card margin
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12), // Match Card inner padding
+      child: Row(
+        children: [
+          // Left side: Empty space for habit name
+          const Expanded(
+            flex: 3,
+            child: SizedBox(),
+          ),
+          const SizedBox(width: 16),
+          // Right side: Date columns - match the exact structure of habit items
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: const EdgeInsets.only(right: 20),
+              child: Row(
+                children: List.generate(dates.length, (i) {
+                  final date = dates[i];
+                  final isToday = date.year == today.year &&
+                                 date.month == today.month &&
+                                 date.day == today.day;
+                  return Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        dateFormat.format(date),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                          color: isToday 
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHabitsListView() {
     if (_habits.isEmpty) {
       return Center(
@@ -230,20 +328,99 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        ...List.generate(_habits.length, (index) {
-          final habit = _habits[index];
-          return HabitItem(
-            habit: habit,
-            onToggle: () => _toggleCompletion(habit),
-            onToggleDate: (date) => _toggleCompletion(habit, date),
-            onDelete: () => _deleteHabit(habit.id),
-            onEdit: () => _navigateToEditHabit(habit),
-          );
-        }),
-        const SizedBox(height: 80), // Extra space for FAB
+    final now = _timeService.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Group habits by category
+    final groupedHabits = _groupHabitsByCategory();
+    
+    // Sort category IDs
+    final sortedCategoryIds = groupedHabits.keys.toList()..sort((a, b) {
+      if (a == 'uncategorized') return 1;
+      if (b == 'uncategorized') return -1;
+      
+      final categoryA = _getCategoryById(a);
+      final categoryB = _getCategoryById(b);
+      
+      if (categoryA == null && categoryB == null) return 0;
+      if (categoryA == null) return 1;
+      if (categoryB == null) return -1;
+      
+      if (!categoryA.isCustom && categoryB.isCustom) return -1;
+      if (categoryA.isCustom && !categoryB.isCustom) return 1;
+      
+      if (!categoryA.isCustom && !categoryB.isCustom) {
+        final indexA = Category.predefined.indexWhere((c) => c.id == a);
+        final indexB = Category.predefined.indexWhere((c) => c.id == b);
+        return indexA.compareTo(indexB);
+      }
+      
+      return categoryA.name.compareTo(categoryB.name);
+    });
+
+    return CustomScrollView(
+      slivers: [
+        // Sticky date header
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _DateHeaderDelegate(
+            child: _buildDateHeader(today),
+            height: 50,
+          ),
+        ),
+        // Habits grouped by category
+        SliverPadding(
+          padding: const EdgeInsets.all(20),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              ...sortedCategoryIds.expand((categoryId) {
+                final categoryHabits = groupedHabits[categoryId]!;
+                final category = _getCategoryById(categoryId);
+                final categoryName = category?.name ?? 'Uncategorized';
+                final categoryIcon = category?.icon ?? '📋';
+                
+                return [
+                  // Category header
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          categoryIcon,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          categoryName,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '(${categoryHabits.length})',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Habits in this category
+                  ...categoryHabits.map((habit) => HabitItem(
+                    habit: habit,
+                    onToggle: () => _toggleCompletion(habit),
+                    onToggleDate: (date) => _toggleCompletion(habit, date),
+                    onDelete: () => _deleteHabit(habit.id),
+                    onEdit: () => _navigateToEditHabit(habit),
+                  )),
+                ];
+              }),
+              const SizedBox(height: 80), // Extra space for FAB
+            ]),
+          ),
+        ),
       ],
     );
   }
@@ -397,5 +574,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
       ),
     );
+  }
+}
+
+// Delegate for sticky date header
+class _DateHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _DateHeaderDelegate({required this.child, required this.height});
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_DateHeaderDelegate oldDelegate) {
+    return oldDelegate.child != child || oldDelegate.height != height;
   }
 }

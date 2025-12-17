@@ -5,24 +5,27 @@ class TestDataService {
   static final Random _random = Random();
   static const int _historicalDays = 365;
 
-  // List of habit names for random selection
-  static const List<String> habitNames = [
-    'Morning Exercise',
-    'Read for 30 min',
-    'Drink 8 glasses of water',
-    'Meditate',
-    'Practice gratitude',
-    'Learn something new',
-    'Take a walk',
-    'Healthy breakfast',
-    'Journal writing',
-    'Stretch',
-    'No social media',
-    'Early to bed',
-    'Call a friend',
-    'Practice a skill',
-    'Clean workspace',
+  // List of habit names for random selection (with category hints)
+  static const List<Map<String, String>> habitData = [
+    {'name': 'Morning Exercise', 'category': 'health'},
+    {'name': 'Read for 30 min', 'category': 'learning'},
+    {'name': 'Drink 8 glasses of water', 'category': 'health'},
+    {'name': 'Meditate', 'category': 'mindfulness'},
+    {'name': 'Practice gratitude', 'category': 'mindfulness'},
+    {'name': 'Learn something new', 'category': 'learning'},
+    {'name': 'Take a walk', 'category': 'health'},
+    {'name': 'Healthy breakfast', 'category': 'health'},
+    {'name': 'Journal writing', 'category': 'creativity'},
+    {'name': 'Stretch', 'category': 'health'},
+    {'name': 'No social media', 'category': 'productivity'},
+    {'name': 'Early to bed', 'category': 'health'},
+    {'name': 'Call a friend', 'category': 'social'},
+    {'name': 'Practice a skill', 'category': 'learning'},
+    {'name': 'Clean workspace', 'category': 'home'},
   ];
+
+  // Keep legacy habitNames for backwards compatibility
+  static final List<String> habitNames = habitData.map((e) => e['name']!).toList();
 
   // List of emojis for random selection
   static const List<String> habitEmojis = [
@@ -33,21 +36,16 @@ class TestDataService {
     '✨', '🔥', '⭐', '💡',
   ];
 
-  /// Generate 5 random habits with unique names, emojis, and colors
+  /// Generate 15 random habits with unique names, emojis, colors, and categories
   static List<Habit> generateRandomHabits() {
-    final selectedNames = <String>[];
+    final selectedData = <Map<String, String>>[];
     final habits = <Habit>[];
     final now = DateTime.now();
 
-    // Select 5 unique habit names
-    while (selectedNames.length < 5) {
-      final name = habitNames[_random.nextInt(habitNames.length)];
-      if (!selectedNames.contains(name)) {
-        selectedNames.add(name);
-      }
-    }
+    // Select all 15 unique habit entries (we have exactly 15 in habitData)
+    selectedData.addAll(habitData);
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 15; i++) {
       // Generate unique ID (same pattern as AddHabitScreen, with +i to prevent collisions)
       final id = (now.millisecondsSinceEpoch + i).toString();
       
@@ -57,15 +55,19 @@ class TestDataService {
       // Select random color from palette
       final color = Habit.habitColors[_random.nextInt(Habit.habitColors.length)];
       
+      // Get category from data
+      final categoryId = selectedData[i]['category'];
+      
       // Create habit with 365 days of historical data
       final habit = Habit(
         id: id,
-        name: selectedNames[i],
+        name: selectedData[i]['name']!,
         interval: 'daily',
         createdAt: now.subtract(const Duration(days: _historicalDays)),
         completions: _generate365DaysOfData(now),
         colorValue: color,
         icon: emoji,
+        categoryId: categoryId,
       );
       
       habits.add(habit);

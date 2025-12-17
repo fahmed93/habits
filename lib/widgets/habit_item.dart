@@ -110,6 +110,9 @@ class _HabitItemState extends State<HabitItem> {
     final dayIndex = date.weekday % 7;  // This converts Sunday(7) to 0, Monday(1) to 1, etc.
     final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayIndex];
     
+    // Use fixed size for all squares to maintain alignment
+    const size = 52.0;
+    
     return GestureDetector(
       onTap: () {
         if (widget.onToggleDate != null) {
@@ -119,57 +122,63 @@ class _HabitItemState extends State<HabitItem> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: isCompleted 
-              ? Color(widget.habit.colorValue)
-              : Theme.of(context).colorScheme.surfaceVariant,
-          border: Border.all(
-            color: isToday 
-                ? Color(widget.habit.colorValue) 
-                : Colors.transparent,
-            width: 2,
+        width: size,
+        height: size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: isCompleted 
+                ? Color(widget.habit.colorValue)
+                : Theme.of(context).colorScheme.surfaceVariant,
+            border: Border.all(
+              color: isToday 
+                  ? Color(widget.habit.colorValue) 
+                  : Colors.transparent,
+              width: 2,
+            ),
+            boxShadow: isCompleted
+                ? [
+                    BoxShadow(
+                      color: Color(widget.habit.colorValue).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
-          boxShadow: isCompleted
-              ? [
-                  BoxShadow(
-                    color: Color(widget.habit.colorValue).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+          alignment: Alignment.center,
+          child: isCompleted
+              ? Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: isToday ? 30.0 : 24.0,
+                )
+              : Text(
+                  dayOfWeek,
+                  style: TextStyle(
+                    fontSize: isToday ? 12.0 : 10.0,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                ]
-              : null,
-        ),
-        alignment: Alignment.center,
-        child: isCompleted
-            ? const Icon(
-                Icons.check_rounded,
-                color: Colors.white,
-                size: 24,
-              )
-            : Text(
-                dayOfWeek,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-              ),
-      ),
+        ),
     );
   }
 
   List<Widget> _buildDayIndicators(DateTime today, BuildContext context) {
     final last5Days = _getLast5DaysFrom(today);
     
-    return last5Days.map((date) {
+    return List.generate(last5Days.length, (i) {
+      final date = last5Days[i];
       final isToday = date.year == today.year &&
                      date.month == today.month &&
                      date.day == today.day;
-      return _buildDayIndicator(date, isToday, context);
-    }).toList();
+      return Expanded(
+        child: Align(
+          alignment: Alignment.center,
+          child: _buildDayIndicator(date, isToday, context),
+        ),
+      );
+    });
   }
 
   @override
@@ -401,7 +410,6 @@ class _HabitItemState extends State<HabitItem> {
                   Expanded(
                     flex: 5,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: _buildDayIndicators(today, context),
                     ),
                   ),
