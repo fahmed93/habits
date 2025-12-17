@@ -85,6 +85,15 @@ class _HabitItemState extends State<HabitItem> {
     return streak;
   }
 
+  String _getStreakUnitDisplay(int streak, String interval) {
+    final unit = interval == 'daily' 
+        ? 'day' 
+        : interval == 'weekly' 
+            ? 'week' 
+            : 'month';
+    return '$streak $unit${streak > 1 ? 's' : ''}';
+  }
+
   Widget _buildDayIndicator(DateTime date, bool isToday, BuildContext context) {
     final isCompleted = _isCompletedOnDate(date);
     final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.weekday % 7];
@@ -223,7 +232,7 @@ class _HabitItemState extends State<HabitItem> {
                 widget.onEdit!();
               }
               return false;
-            } else {
+            } else if (direction == DismissDirection.endToStart) {
               // Delete action - show confirmation dialog
               return await showDialog(
                 context: context,
@@ -251,6 +260,7 @@ class _HabitItemState extends State<HabitItem> {
                 },
               );
             }
+            return false;
           },
           onDismissed: (direction) {
             if (direction == DismissDirection.endToStart) {
@@ -370,7 +380,7 @@ class _HabitItemState extends State<HabitItem> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '$streak ${widget.habit.interval == 'daily' ? 'day' : widget.habit.interval == 'weekly' ? 'week' : 'month'}${streak > 1 ? 's' : ''}',
+                                  _getStreakUnitDisplay(streak, widget.habit.interval),
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
