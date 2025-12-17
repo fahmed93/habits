@@ -142,7 +142,7 @@ class _HabitItemState extends State<HabitItem> {
               ),
               alignment: Alignment.center,
               child: isCompleted
-                  ? Icon(
+                  ? const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
                       size: 24,
@@ -187,7 +187,7 @@ class _HabitItemState extends State<HabitItem> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-        child: Dismissible(
+      child: Dismissible(
           key: Key(widget.habit.id),
           direction: DismissDirection.endToStart,
           background: Container(
@@ -399,7 +399,6 @@ class _HabitItemState extends State<HabitItem> {
             ),
           ),
         ),
-      ),
     );
   }
 }

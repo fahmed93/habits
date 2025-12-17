@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.check_circle_rounded,
                       size: 64,
                       color: Colors.white,
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (_isLoading)
                     Container(
                       padding: const EdgeInsets.all(24),
-                      child: CircularProgressIndicator(
+                      child: const CircularProgressIndicator(
                         strokeWidth: 3,
                       ),
                     )
@@ -180,12 +180,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.login_rounded, size: 24),
-                                const SizedBox(width: 12),
-                                const Text(
+                                SizedBox(width: 12),
+                                Text(
                                   'Continue with Google',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -215,12 +215,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.apple, size: 24),
-                                  const SizedBox(width: 12),
-                                  const Text(
+                                  SizedBox(width: 12),
+                                  Text(
                                     'Continue with Apple',
                                     style: TextStyle(
                                       fontSize: 16,
