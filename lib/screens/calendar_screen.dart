@@ -117,78 +117,161 @@ class _CalendarScreenState extends State<CalendarScreen> {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // View mode filter
-          Row(
-            children: [
-              const Text('View: ', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('Week'),
-                selected: _viewMode == CalendarViewMode.week,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() => _viewMode = CalendarViewMode.week);
-                  }
-                },
-              ),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('Month'),
-                selected: _viewMode == CalendarViewMode.month,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() => _viewMode = CalendarViewMode.month);
-                  }
-                },
-              ),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('Year'),
-                selected: _viewMode == CalendarViewMode.year,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() => _viewMode = CalendarViewMode.year);
-                  }
-                },
-              ),
-            ],
+          Text(
+            'View Mode',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildViewModeChip('Week', CalendarViewMode.week),
+                const SizedBox(width: 8),
+                _buildViewModeChip('Month', CalendarViewMode.month),
+                const SizedBox(width: 8),
+                _buildViewModeChip('Year', CalendarViewMode.year),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          
           // Habit filter
-          Row(
-            children: [
-              const Text('Habit: ', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      if (selectedHabit != null)
-                        ActionChip(
-                          label: Text(selectedHabit.name),
-                          avatar: Text(selectedHabit.icon),
-                          onPressed: _showHabitFilterDialog,
-                        )
-                      else
-                        ActionChip(
-                          label: const Text('Select a habit'),
-                          avatar: const Icon(Icons.filter_list, size: 18),
-                          onPressed: _showHabitFilterDialog,
-                        ),
-                    ],
+          Text(
+            'Selected Habit',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (selectedHabit != null)
+            InkWell(
+              onTap: _showHabitFilterDialog,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Color(selectedHabit.colorValue).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Color(selectedHabit.colorValue).withOpacity(0.3),
+                    width: 1.5,
                   ),
                 ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(selectedHabit.colorValue),
+                            Color(selectedHabit.colorValue).withOpacity(0.7),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          selectedHabit.icon,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        selectedHabit.name,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down_rounded,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            )
+          else
+            InkWell(
+              onTap: _showHabitFilterDialog,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.filter_list_rounded,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Select a habit',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
+    );
+  }
+
+  Widget _buildViewModeChip(String label, CalendarViewMode mode) {
+    final isSelected = _viewMode == mode;
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          setState(() => _viewMode = mode);
+        }
+      },
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 
@@ -199,25 +282,43 @@ class _CalendarScreenState extends State<CalendarScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.calendar_today,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No habits yet',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[600],
+            Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).colorScheme.primaryContainer,
+                    Theme.of(context).colorScheme.secondaryContainer,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Icon(
+                Icons.calendar_today_rounded,
+                size: 70,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 32),
             Text(
-              'Add habits to see them in the calendar',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
+              'No habits yet',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Text(
+                'Add habits to see them in the calendar',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
