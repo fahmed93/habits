@@ -337,7 +337,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _selectedIndex == 0
               ? _buildHabitsListView()
-              : CalendarScreen(habits: _habits),
+              : CalendarScreen(
+                  habits: _habits,
+                  onToggleDate: _toggleCompletion,
+                ),
       floatingActionButton: _selectedIndex == 0
           ? Container(
               decoration: BoxDecoration(

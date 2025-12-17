@@ -6,8 +6,13 @@ enum CalendarViewMode { week, month, year }
 
 class CalendarScreen extends StatefulWidget {
   final List<Habit> habits;
+  final Function(Habit, DateTime)? onToggleDate;
 
-  const CalendarScreen({super.key, required this.habits});
+  const CalendarScreen({
+    super.key,
+    required this.habits,
+    this.onToggleDate,
+  });
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -334,6 +339,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: HabitCalendar(
               habits: _filteredHabits,
               viewMode: _viewMode,
+              onToggleDate: widget.onToggleDate,
             ),
           ),
         ),
