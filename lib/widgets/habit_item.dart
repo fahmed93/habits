@@ -86,11 +86,20 @@ class _HabitItemState extends State<HabitItem> {
   }
 
   String _getStreakUnitDisplay(int streak, String interval) {
-    final unit = interval == 'daily' 
-        ? 'day' 
-        : interval == 'weekly' 
-            ? 'week' 
-            : 'month';
+    String unit;
+    switch (interval) {
+      case 'daily':
+        unit = 'day';
+        break;
+      case 'weekly':
+        unit = 'week';
+        break;
+      case 'monthly':
+        unit = 'month';
+        break;
+      default:
+        unit = 'day';
+    }
     return '$streak $unit${streak > 1 ? 's' : ''}';
   }
 
