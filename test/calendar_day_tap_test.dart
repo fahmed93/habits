@@ -71,9 +71,6 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      
       final habit = Habit(
         id: '1',
         name: 'Reading',
@@ -105,8 +102,10 @@ void main() {
       await tester.tap(find.text('Week'));
       await tester.pumpAndSettle();
 
-      // Find a calendar day (the GestureDetector wrapping the day)
-      final dayFinder = find.text('${today.day}');
+      // The calendar starts at the first of the month, so in week view
+      // we'll see the week containing the 1st of the current month
+      // Find day "1" which should be visible in that week
+      final dayFinder = find.text('1');
       expect(dayFinder, findsWidgets);
       
       // Tap on the first occurrence
