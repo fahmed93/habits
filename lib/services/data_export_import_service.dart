@@ -129,7 +129,12 @@ class DataExportImportService {
         return false;
       }
 
-      final file = File(result.files.single.path!);
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        throw Exception('File path not available');
+      }
+
+      final file = File(filePath);
       final jsonString = await file.readAsString();
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
 

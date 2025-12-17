@@ -203,10 +203,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Data imported successfully! Habits will update when you return to the home screen.'),
+          content: Text('Data imported successfully!'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 4),
         ),
       );
 
