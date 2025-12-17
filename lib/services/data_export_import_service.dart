@@ -66,7 +66,7 @@ class DataExportImportService {
     try {
       // Validate data structure
       if (!data.containsKey('version') || !data.containsKey('habits')) {
-        throw Exception('Invalid backup file format');
+        throw Exception('The selected file is not a valid habit backup. Please choose a backup file created by this app.');
       }
 
       final habitStorage = HabitStorage(userId: userId);
@@ -131,7 +131,7 @@ class DataExportImportService {
 
       final filePath = result.files.single.path;
       if (filePath == null) {
-        throw Exception('File path not available');
+        throw Exception('Selected file could not be accessed. Please try selecting the file again.');
       }
 
       final file = File(filePath);
