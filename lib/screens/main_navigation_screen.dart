@@ -6,7 +6,6 @@ import '../models/category.dart';
 import '../services/habit_storage.dart';
 import '../services/category_storage.dart';
 import '../services/time_service.dart';
-import '../services/auth_service.dart';
 import '../services/test_data_service.dart';
 import '../widgets/habit_item.dart';
 import 'add_habit_screen.dart';
@@ -32,7 +31,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late final HabitStorage _storage;
   late final CategoryStorage _categoryStorage;
   final TimeService _timeService = TimeService();
-  final AuthService _authService = AuthService();
   List<Habit> _habits = [];
   List<Category> _categories = [];
   bool _isLoading = true;
@@ -115,13 +113,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     await _loadHabits();
   }
 
-  Future<void> _add24Hours() async {
-    await _timeService.addHours(24);
-    setState(() {
-      // Trigger rebuild to show new date
-    });
-  }
-
   Future<void> _deleteHabit(String habitId) async {
     await _storage.deleteHabit(habitId);
     await _loadHabits();
@@ -150,31 +141,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
     if (result == true) {
       await _loadHabits();
-    }
-  }
-
-  Future<void> _handleLogout() async {
-    final shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldLogout == true) {
-      await _authService.signOut();
-      // Navigation will be handled by the auth state listener in main.dart
     }
   }
 
@@ -483,32 +449,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ],
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.access_time_rounded),
-              tooltip: '+24 hours',
-              onPressed: _add24Hours,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.logout_rounded),
-              tooltip: 'Sign Out',
-              onPressed: _handleLogout,
-            ),
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

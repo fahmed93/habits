@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/theme_service.dart';
 import '../services/data_export_import_service.dart';
+import '../services/time_service.dart';
+import '../services/auth_service.dart';
 import 'notification_settings_screen.dart';
 import 'about_screen.dart';
 
@@ -20,6 +22,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final ThemeService _themeService = ThemeService();
+  final TimeService _timeService = TimeService();
+  final AuthService _authService = AuthService();
   ThemeMode _currentThemeMode = ThemeMode.system;
 
   @override
@@ -230,6 +234,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _add24Hours() async {
+    await _timeService.addHours(24);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Added 24 hours to time offset'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Future<void> _handleSignOut() async {
+    final shouldSignOut = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldSignOut != true) return;
+
+    try {
+      await _authService.signOut();
+      // Navigation will be handled by the auth state listener in main.dart
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign out failed: $e'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -306,6 +360,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 12),
           _buildSettingsCard(
             context,
+            icon: Icons.access_time_rounded,
+            iconColor: Theme.of(context).colorScheme.primary,
+            title: '+24 Hours',
+            subtitle: 'Add 24 hours to time offset (for testing)',
+            onTap: _add24Hours,
+          ),
+          const SizedBox(height: 12),
+          _buildSettingsCard(
+            context,
             icon: Icons.language_rounded,
             iconColor: Theme.of(context).colorScheme.secondary,
             title: 'Language',
@@ -336,6 +399,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Import Data',
             subtitle: 'Restore data from a backup file',
             onTap: _importData,
+          ),
+          const SizedBox(height: 32),
+          
+          // Account Section
+          _buildSectionHeader(context, 'Account'),
+          const SizedBox(height: 12),
+          _buildSettingsCard(
+            context,
+            icon: Icons.logout_rounded,
+            iconColor: Theme.of(context).colorScheme.error,
+            title: 'Sign Out',
+            subtitle: 'Sign out of your account',
+            onTap: _handleSignOut,
           ),
           const SizedBox(height: 32),
           
