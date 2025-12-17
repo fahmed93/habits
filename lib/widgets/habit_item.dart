@@ -111,7 +111,7 @@ class _HabitItemState extends State<HabitItem> {
     final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayIndex];
     
     // Use fixed size for all squares to maintain alignment
-    const size = 52.0;
+    const size = 40.0;
     
     return GestureDetector(
       onTap: () {
@@ -150,12 +150,12 @@ class _HabitItemState extends State<HabitItem> {
               ? Icon(
                   Icons.check_rounded,
                   color: Colors.white,
-                  size: isToday ? 30.0 : 24.0,
+                  size: isToday ? 24.0 : 20.0,
                 )
               : Text(
                   dayOfWeek,
                   style: TextStyle(
-                    fontSize: isToday ? 12.0 : 10.0,
+                    fontSize: isToday ? 10.0 : 9.0,
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
