@@ -258,7 +258,7 @@ void main() {
       expect(find.byType(Wrap), findsNothing);
     });
 
-    testWidgets('HabitCalendar should display completion dots for completed habits',
+    testWidgets('HabitCalendar should render with completed habits',
         (WidgetTester tester) async {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
@@ -447,6 +447,91 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('$nextYear'), findsOneWidget);
+    });
+
+    testWidgets('HabitCalendar should fill day background with habit color when completed',
+        (WidgetTester tester) async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [today],
+        colorValue: 0xFF6366F1, // Indigo color
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // Find containers that are descendants of Tooltips (calendar day cells)
+      final dayContainers = find.descendant(
+        of: find.byType(Tooltip),
+        matching: find.byType(Container),
+      );
+      
+      // At least one day container should have the habit's background color
+      bool foundColoredDayContainer = false;
+      for (final element in dayContainers.evaluate()) {
+        final container = element.widget as Container;
+        final decoration = container.decoration as BoxDecoration?;
+        if (decoration?.color != null && 
+            decoration?.color?.value == habit.colorValue) {
+          foundColoredDayContainer = true;
+          break;
+        }
+      }
+      
+      expect(foundColoredDayContainer, true);
+    });
+
+    testWidgets('HabitCalendar should not fill background for uncompleted days',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [], // No completions
+        colorValue: 0xFF6366F1,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitCalendar(habits: [habit]),
+          ),
+        ),
+      );
+
+      // Find containers that are descendants of Tooltips (calendar day cells)
+      final dayContainers = find.descendant(
+        of: find.byType(Tooltip),
+        matching: find.byType(Container),
+      );
+      
+      // Check that no day container has the habit's background color as a solid fill
+      // (the legend will have small colored circles, but day cells should be transparent)
+      bool foundColoredDayContainer = false;
+      for (final element in dayContainers.evaluate()) {
+        final container = element.widget as Container;
+        final decoration = container.decoration as BoxDecoration?;
+        if (decoration?.color != null && 
+            decoration?.color != Colors.transparent &&
+            decoration?.color?.value == habit.colorValue) {
+          foundColoredDayContainer = true;
+          break;
+        }
+      }
+      
+      expect(foundColoredDayContainer, false);
     });
   });
 }

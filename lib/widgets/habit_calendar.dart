@@ -432,6 +432,22 @@ class _CalendarDay extends StatelessWidget {
     final completionCount = completedHabits.length;
     final habitColors =
         completedHabits.map((h) => Color(h.colorValue)).toList();
+    
+    // Get the background color - use habit color if completed, otherwise transparent
+    // Note: Calendar uses single-habit filter, so completedHabits has at most 1 item
+    final backgroundColor = !isFuture && habitColors.isNotEmpty
+        ? habitColors.first
+        : Colors.transparent;
+    
+    // Determine text color based on background brightness
+    final textColor = !isFuture && habitColors.isNotEmpty
+        ? _getContrastColor(backgroundColor)
+        : isFuture
+            ? Theme.of(context)
+                .colorScheme
+                .onSurfaceVariant
+                .withOpacity(0.5)
+            : Theme.of(context).colorScheme.onSurface;
 
     return Tooltip(
       message: isFuture
@@ -442,6 +458,7 @@ class _CalendarDay extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(6),
           border: isToday
               ? Border.all(
@@ -453,64 +470,25 @@ class _CalendarDay extends StatelessWidget {
                   width: 0.5,
                 ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$day',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-        color: isFuture
-          ? Theme.of(context)
-            .colorScheme
-            .onSurfaceVariant
-            .withOpacity(0.5)
-          : Theme.of(context).colorScheme.onSurface,
-              ),
+        child: Center(
+          child: Text(
+            '$day',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+              color: textColor,
             ),
-            if (!isFuture && habitColors.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _buildColorDots(habitColors),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );
   }
-
-  List<Widget> _buildColorDots(List<Color> colors) {
-    // Show up to 4 dots, if more show "+" indicator
-    const maxDots = 4;
-    final displayColors = colors.take(maxDots).toList();
-    final hasMore = colors.length > maxDots;
-
-    return [
-      ...displayColors.map((color) => Container(
-            width: 6,
-            height: 6,
-            margin: const EdgeInsets.symmetric(horizontal: 1),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-          )),
-      if (hasMore)
-        Container(
-          width: 6,
-          height: 6,
-          margin: const EdgeInsets.symmetric(horizontal: 1),
-          child: const Center(
-            child: Text(
-              '+',
-              style: TextStyle(fontSize: 6, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-    ];
+  
+  /// Determines whether to use light or dark text based on background color brightness
+  Color _getContrastColor(Color backgroundColor) {
+    // Calculate relative luminance
+    final luminance = backgroundColor.computeLuminance();
+    // Use white text for dark backgrounds, black for light backgrounds
+    return luminance > 0.5 ? Colors.black : Colors.white;
   }
 }
