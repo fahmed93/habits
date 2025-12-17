@@ -93261,7 +93261,7 @@ if(r==null)r=n
 else{q=A.k(a).ax
 p=q.rx
 r=r.be(p==null?q.k3:p)}q=t.p
-r=A.ef(A.cL(A.b([l,B.cD,m,B.mw,A.aB("Version 1.0.0",n,n,n,r,n,n,n)],q),B.D,B.y,B.C,0,B.O),n,n)
+r=A.ef(A.cL(A.b([l,B.cD,m,B.mw,A.aB("Version 1.0.0+2",n,n,n,r,n,n,n)],q),B.D,B.y,B.C,0,B.O),n,n)
 m=o.z4(a,"A mobile habit tracker app built with Flutter and Firebase Authentication. Track your daily, weekly, and monthly habits to build better routines and achieve your goals.",B.pP,A.k(a).ax.b,"About This App")
 l=A.k(a).ax
 p=l.CW
