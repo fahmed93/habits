@@ -319,7 +319,7 @@ class _DateHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
+    return SizedBox.expand(child: child);
   }
 
   @override
