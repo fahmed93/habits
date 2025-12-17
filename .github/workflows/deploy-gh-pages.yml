@@ -29,6 +29,24 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       
+      - name: Increment build version
+        run: dart scripts/increment_version.dart
+      
+      - name: Commit version increment
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add version.json lib/generated/version.dart
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: increment build version [skip ci]"
+            if ! git push; then
+              echo "Failed to push version increment"
+              exit 1
+            fi
+          else
+            echo "No version changes to commit"
+          fi
+      
       - name: Build Flutter web
         run: flutter build web --release --base-href "/habits/"
       
