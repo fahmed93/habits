@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../constants.dart';
 import 'main_navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -271,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (context) => MainNavigationScreen(
-                                    userId: 'guest',
+                                    userId: AppConstants.guestUserId,
                                     onThemeChanged: widget.onThemeChanged,
                                   ),
                                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../constants.dart';
 import '../models/habit.dart';
 import '../services/habit_storage.dart';
 import '../services/time_service.dart';
@@ -49,7 +50,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   /// Initialize test data for guest user on first use
   Future<void> _initializeGuestUserData() async {
     // Only initialize for guest user
-    if (widget.userId != 'guest') {
+    if (widget.userId != AppConstants.guestUserId) {
       return;
     }
 

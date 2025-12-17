@@ -22,27 +22,7 @@ class HabitItem extends StatefulWidget {
   State<HabitItem> createState() => _HabitItemState();
 }
 
-class _HabitItemState extends State<HabitItem> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+class _HabitItemState extends State<HabitItem> {
 
   bool _isCompletedToday() {
     final now = TimeService().now();
@@ -200,15 +180,13 @@ class _HabitItemState extends State<HabitItem> with SingleTickerProviderStateMix
     final isCompleted = _isCompletedToday();
     final streak = _getCurrentStreak();
 
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        elevation: 2,
-        shadowColor: Color(widget.habit.colorValue).withOpacity(0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shadowColor: Color(widget.habit.colorValue).withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
         child: Dismissible(
           key: Key(widget.habit.id),
           direction: DismissDirection.endToStart,
