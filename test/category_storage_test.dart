@@ -18,7 +18,7 @@ void main() {
 
     test('addCategory should save and retrieve a custom category', () async {
       final storage = CategoryStorage();
-      final category = Category(
+      const category = Category(
         id: 'custom1',
         name: 'Custom Category',
         icon: '🎯',
@@ -37,7 +37,7 @@ void main() {
 
     test('updateCategory should update an existing category', () async {
       final storage = CategoryStorage();
-      final category = Category(
+      const category = Category(
         id: 'custom1',
         name: 'Original Name',
         icon: '🎯',
@@ -56,13 +56,13 @@ void main() {
 
     test('deleteCategory should remove a category', () async {
       final storage = CategoryStorage();
-      final category1 = Category(
+      const category1 = Category(
         id: 'custom1',
         name: 'Category 1',
         icon: '🎯',
         isCustom: true,
       );
-      final category2 = Category(
+      const category2 = Category(
         id: 'custom2',
         name: 'Category 2',
         icon: '📝',
@@ -81,7 +81,7 @@ void main() {
     test('loadAllCategories should return predefined and custom categories',
         () async {
       final storage = CategoryStorage();
-      final customCategory = Category(
+      const customCategory = Category(
         id: 'custom1',
         name: 'Custom Category',
         icon: '🎯',
@@ -106,13 +106,13 @@ void main() {
       final storage1 = CategoryStorage(userId: 'user1');
       final storage2 = CategoryStorage(userId: 'user2');
 
-      final category1 = Category(
+      const category1 = Category(
         id: 'custom1',
         name: 'User 1 Category',
         icon: '🎯',
         isCustom: true,
       );
-      final category2 = Category(
+      const category2 = Category(
         id: 'custom2',
         name: 'User 2 Category',
         icon: '📝',
@@ -144,7 +144,7 @@ void main() {
 
     test('saveCategories should persist multiple categories', () async {
       final storage = CategoryStorage();
-      final categories = [
+      const categories = [
         Category(
           id: 'custom1',
           name: 'Category 1',

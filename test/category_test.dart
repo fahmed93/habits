@@ -4,7 +4,7 @@ import 'package:habits/models/category.dart';
 void main() {
   group('Category Model Tests', () {
     test('Category toJson and fromJson should work correctly', () {
-      final category = Category(
+      const category = Category(
         id: 'test',
         name: 'Test Category',
         icon: '📝',
@@ -44,7 +44,7 @@ void main() {
 
     test('Category copyWith should create a new category with updated fields',
         () {
-      final category = Category(
+      const category = Category(
         id: 'test',
         name: 'Test Category',
         icon: '📝',
@@ -60,14 +60,14 @@ void main() {
     });
 
     test('Category equality should be based on id', () {
-      final category1 = Category(
+      const category1 = Category(
         id: 'test',
         name: 'Test Category',
         icon: '📝',
         isCustom: true,
       );
 
-      final category2 = Category(
+      const category2 = Category(
         id: 'test',
         name: 'Different Name',
         icon: '🎯',
@@ -102,7 +102,7 @@ void main() {
     });
 
     test('Category toJson should include all fields', () {
-      final category = Category(
+      const category = Category(
         id: 'test',
         name: 'Test Category',
         icon: '📝',
@@ -119,7 +119,7 @@ void main() {
 
     test('Category copyWith with null values should preserve original values',
         () {
-      final category = Category(
+      const category = Category(
         id: 'test',
         name: 'Test Category',
         icon: '📝',
