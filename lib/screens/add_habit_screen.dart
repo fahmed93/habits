@@ -64,23 +64,62 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Add New Habit'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primaryContainer,
+                Theme.of(context).colorScheme.surface,
+              ],
+            ),
+          ),
+        ),
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        title: const Text(
+          'Create New Habit',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            letterSpacing: -0.5,
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Habit Name
+              Text(
+                'Habit Name',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Habit Name',
-                  hintText: 'e.g., Exercise, Read, Meditate',
-                  border: OutlineInputBorder(),
+                  hintText: 'e.g., Morning Exercise, Read 30 min',
+                  prefixIcon: Icon(Icons.edit_rounded),
                 ),
+                style: const TextStyle(fontSize: 16),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter a habit name';
@@ -88,43 +127,53 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Icon',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              const SizedBox(height: 32),
+              
+              // Icon Selection
+              Text(
+                'Choose an Icon',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Container(
-                    width: 64,
-                    height: 64,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 2,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(_selectedColor),
+                          Color(_selectedColor).withOpacity(0.7),
+                        ],
                       ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(_selectedColor).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       _iconController.text.isEmpty ? '✓' : _iconController.text,
-                      style: const TextStyle(fontSize: 32),
+                      style: const TextStyle(fontSize: 40),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 20),
                   Expanded(
                     child: TextFormField(
                       controller: _iconController,
                       decoration: const InputDecoration(
-                        labelText: 'Emoji',
-                        hintText: 'Tap to select emoji',
-                        border: OutlineInputBorder(),
-                        helperText: 'Use your keyboard to pick an emoji',
+                        hintText: 'Enter or select emoji',
+                        helperText: 'Use your keyboard emoji picker',
+                        prefixIcon: Icon(Icons.emoji_emotions_rounded),
                       ),
                       style: const TextStyle(fontSize: 24),
                       maxLength: 10,
@@ -135,42 +184,65 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Interval',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              const SizedBox(height: 32),
+              
+              // Interval Selection
+              Text(
+                'Frequency',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 12),
-              Column(
-                children: _intervals.map((interval) {
-                  return RadioListTile<String>(
-                    title: Text(interval['label']!),
-                    value: interval['value']!,
-                    groupValue: _selectedInterval,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedInterval = value!;
-                      });
-                    },
-                    contentPadding: EdgeInsets.zero,
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Color',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: _intervals.map((interval) {
+                    final isSelected = _selectedInterval == interval['value'];
+                    return Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: isSelected 
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: RadioListTile<String>(
+                        title: Text(
+                          interval['label']!,
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          ),
+                        ),
+                        value: interval['value']!,
+                        groupValue: _selectedInterval,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedInterval = value!;
+                          });
+                        },
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 32),
+              
+              // Color Selection
+              Text(
+                'Choose a Color',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 16,
+                runSpacing: 16,
                 children: Habit.habitColors.map((colorValue) {
                   final isSelected = _selectedColor == colorValue;
                   return GestureDetector(
@@ -179,49 +251,75 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                         _selectedColor = colorValue;
                       });
                     },
-                    child: Container(
-                      width: 40,
-                      height: 40,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: isSelected ? 56 : 48,
+                      height: isSelected ? 56 : 48,
                       decoration: BoxDecoration(
-                        color: Color(colorValue),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(colorValue),
+                            Color(colorValue).withOpacity(0.7),
+                          ],
+                        ),
                         shape: BoxShape.circle,
                         border: isSelected
                             ? Border.all(
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 3,
                               )
                             : null,
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                  color:
-                    Color(colorValue).withOpacity(0.4),
-                                  blurRadius: 8,
+                                  color: Color(colorValue).withOpacity(0.4),
+                                  blurRadius: 12,
                                   spreadRadius: 2,
+                                  offset: const Offset(0, 4),
                                 )
                               ]
-                            : null,
+                            : [
+                                BoxShadow(
+                                  color: Color(colorValue).withOpacity(0.2),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                )
+                              ],
                       ),
                       child: isSelected
                           ? const Icon(
-                              Icons.check,
+                              Icons.check_rounded,
                               color: Colors.white,
-                              size: 20,
+                              size: 28,
                             )
                           : null,
                     ),
                   );
                 }).toList(),
               ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: _saveHabit,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Save Habit',
-                  style: TextStyle(fontSize: 16),
+              const SizedBox(height: 48),
+              
+              // Save Button
+              SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _saveHabit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    elevation: 2,
+                    shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  ),
+                  child: const Text(
+                    'Create Habit',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ),
               ),
             ],

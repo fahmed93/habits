@@ -161,8 +161,9 @@ void main() {
         ),
       );
 
-      expect(find.textContaining('day streak'), findsOneWidget);
-      expect(find.text('3 day streak 🔥'), findsOneWidget);
+      // Streak now displays as "🔥 X day/days" instead of "X day streak 🔥"
+      expect(find.text('🔥'), findsOneWidget);
+      expect(find.text('3 days'), findsOneWidget);
     });
 
     testWidgets('HabitItem should not display streak when no completions',
@@ -425,7 +426,9 @@ void main() {
         ),
       );
 
-      expect(find.text('1 week streak 🔥'), findsOneWidget);
+      // Streak now displays as "🔥 1 week" instead of "1 week streak 🔥"
+      expect(find.text('🔥'), findsOneWidget);
+      expect(find.text('1 week'), findsOneWidget);
     });
 
     testWidgets('HabitItem should display month streak label for monthly habit',
@@ -452,7 +455,9 @@ void main() {
         ),
       );
 
-      expect(find.text('1 month streak 🔥'), findsOneWidget);
+      // Streak now displays as "🔥 1 month" instead of "1 month streak 🔥"
+      expect(find.text('🔥'), findsOneWidget);
+      expect(find.text('1 month'), findsOneWidget);
     });
   });
 }
