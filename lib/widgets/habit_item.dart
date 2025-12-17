@@ -105,7 +105,10 @@ class _HabitItemState extends State<HabitItem> {
 
   Widget _buildDayIndicator(DateTime date, bool isToday, BuildContext context) {
     final isCompleted = _isCompletedOnDate(date);
-    final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.weekday % 7];
+    // DateTime.weekday: Monday=1, Tuesday=2, ..., Sunday=7
+    // We need: Sunday=0, Monday=1, ..., Saturday=6 for array indexing
+    final dayIndex = date.weekday % 7;  // This converts Sunday(7) to 0, Monday(1) to 1, etc.
+    final dayOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayIndex];
     
     return GestureDetector(
       onTap: () {
