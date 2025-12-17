@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/habit.dart';
@@ -113,7 +114,8 @@ class DataExportImportService {
   }
 
   /// Import data from a file selected by user
-  Future<void> importFromFile() async {
+  /// Returns true if import was successful, false if user cancelled
+  Future<bool> importFromFile() async {
     try {
       // Pick a file
       final result = await FilePicker.platform.pickFiles(
@@ -123,7 +125,8 @@ class DataExportImportService {
       );
 
       if (result == null || result.files.isEmpty) {
-        throw Exception('No file selected');
+        // User cancelled file selection
+        return false;
       }
 
       final file = File(result.files.single.path!);
@@ -131,6 +134,7 @@ class DataExportImportService {
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
 
       await importData(data);
+      return true;
     } catch (e) {
       rethrow;
     }

@@ -188,24 +188,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
       final importService = DataExportImportService(userId: widget.userId);
-      await importService.importFromFile();
+      final success = await importService.importFromFile();
 
       // Close loading dialog
       if (!mounted) return;
       Navigator.pop(context);
 
+      if (!success) {
+        // User cancelled file selection - no error message needed
+        return;
+      }
+
       // Show success message and reload theme
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Data imported successfully! Please restart the app to see all changes.'),
+          content: Text('Data imported successfully! Habits will update when you return to the home screen.'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 4),
         ),
       );
 
-      // Reload theme mode
+      // Reload theme mode - this will apply immediately
       await _loadThemeMode();
       widget.onThemeChanged(_currentThemeMode);
     } catch (e) {
