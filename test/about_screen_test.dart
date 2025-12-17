@@ -58,6 +58,11 @@ void main() {
         ),
       );
 
+      // Scroll down to make the Developer section visible
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      
       expect(find.text('Developer'), findsOneWidget);
       expect(find.textContaining('Built with'), findsOneWidget);
     });
@@ -70,11 +75,14 @@ void main() {
         ),
       );
 
+      // Scroll down to make the License section visible
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListView), const Offset(0, -400));
+      await tester.pumpAndSettle();
+      
       expect(find.text('License'), findsOneWidget);
       expect(find.text('Open Source Project'), findsOneWidget);
-    });
-
-    testWidgets('AboutScreen should have a back button',
+    });    testWidgets('AboutScreen should have a back button',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
