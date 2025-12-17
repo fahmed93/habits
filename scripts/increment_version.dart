@@ -26,6 +26,9 @@ void main() async {
   );
   
   // Generate Dart file
+  // Note: This generated file is intentionally tracked in Git (not in .gitignore)
+  // because the version needs to persist across builds and be available immediately
+  // after checkout. It serves as the source of truth for the current build number.
   final generatedFile = File('lib/generated/version.dart');
   await generatedFile.parent.create(recursive: true);
   

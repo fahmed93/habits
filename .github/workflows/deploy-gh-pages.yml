@@ -39,7 +39,10 @@ jobs:
           git add version.json lib/generated/version.dart
           if ! git diff --staged --quiet; then
             git commit -m "chore: increment build version [skip ci]"
-            git push
+            if ! git push; then
+              echo "Failed to push version increment"
+              exit 1
+            fi
           else
             echo "No version changes to commit"
           fi

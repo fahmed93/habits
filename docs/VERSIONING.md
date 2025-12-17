@@ -101,6 +101,7 @@ To change the semantic version (e.g., from 1.0.0 to 2.0.0):
 ## Notes
 
 - The `[skip ci]` flag in the commit message prevents infinite loops (the version commit doesn't trigger another build)
-- The version files are tracked in Git to ensure version persistence
+- **The version files are tracked in Git** (not in .gitignore) to ensure version persistence and availability immediately after checkout. This is intentional - the generated files serve as the source of truth for the current build number.
 - The build number always increments, even if the deployment fails
 - The generated file has a header comment indicating it's auto-generated
+- If the git push fails during deployment, the workflow will exit with an error to alert about the issue
