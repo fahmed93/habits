@@ -189,8 +189,21 @@ class _HabitItemState extends State<HabitItem> {
       ),
       child: Dismissible(
           key: Key(widget.habit.id),
-          direction: DismissDirection.endToStart,
+          direction: DismissDirection.horizontal,
           background: Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(left: 24),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade400,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.edit_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+          secondaryBackground: Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 24),
             decoration: BoxDecoration(
@@ -204,33 +217,46 @@ class _HabitItemState extends State<HabitItem> {
             ),
           ),
           confirmDismiss: (direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  title: const Text('Delete Habit'),
-                  content: const Text('Are you sure you want to delete this habit?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Cancel'),
+            if (direction == DismissDirection.startToEnd) {
+              // Edit action - don't dismiss, just trigger edit
+              if (widget.onEdit != null) {
+                widget.onEdit!();
+              }
+              return false;
+            } else {
+              // Delete action - show confirmation dialog
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                    title: const Text('Delete Habit'),
+                    content: const Text('Are you sure you want to delete this habit?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
                       ),
-                      child: const Text('Delete'),
-                    ),
-                  ],
-                );
-              },
-            );
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
           },
-          onDismissed: (direction) => widget.onDelete(),
+          onDismissed: (direction) {
+            if (direction == DismissDirection.endToStart) {
+              widget.onDelete();
+            }
+          },
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
@@ -245,153 +271,134 @@ class _HabitItemState extends State<HabitItem> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header row
-                  Row(
-                    children: [
-                      // Icon with gradient background
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(widget.habit.colorValue),
-                              Color(widget.habit.colorValue).withOpacity(0.7),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(widget.habit.colorValue).withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            widget.habit.icon,
-                            style: const TextStyle(fontSize: 28),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Title and interval
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.habit.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                decoration: isCompleted ? TextDecoration.lineThrough : null,
-                                decorationThickness: 2,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(widget.habit.colorValue).withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    _getIntervalDisplay(),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(widget.habit.colorValue),
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ),
-                                if (streak > 0) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xFFFF6B35).withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text(
-                                          '🔥',
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '$streak ${widget.habit.interval == 'daily' ? 'day' : widget.habit.interval == 'weekly' ? 'week' : 'month'}${streak > 1 ? 's' : ''}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                  // Left side: Icon, Name, and Interval
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Icon with gradient background
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(widget.habit.colorValue),
+                                Color(widget.habit.colorValue).withOpacity(0.7),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                      // Edit button
-                      if (widget.onEdit != null)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(widget.habit.colorValue).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(widget.habit.colorValue).withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit_rounded,
-                              color: Color(widget.habit.colorValue),
-                              size: 20,
+                          child: Center(
+                            child: Text(
+                              widget.habit.icon,
+                              style: const TextStyle(fontSize: 28),
                             ),
-                            onPressed: widget.onEdit,
-                            tooltip: 'Edit',
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // 5-day completion view
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(16),
+                        const SizedBox(height: 12),
+                        // Habit name
+                        Text(
+                          widget.habit.name,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            decoration: isCompleted ? TextDecoration.lineThrough : null,
+                            decorationThickness: 2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Interval badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(widget.habit.colorValue).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _getIntervalDisplay(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(widget.habit.colorValue),
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        // Streak badge
+                        if (streak > 0) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFF6B35).withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  '🔥',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '$streak ${widget.habit.interval == 'daily' ? 'day' : widget.habit.interval == 'weekly' ? 'week' : 'month'}${streak > 1 ? 's' : ''}',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: _buildDayIndicators(today, context),
+                  ),
+                  const SizedBox(width: 16),
+                  // Right side: 5-day completion view
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: _buildDayIndicators(today, context),
+                      ),
                     ),
                   ),
                 ],
