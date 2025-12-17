@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/theme_service.dart';
 import 'notification_settings_screen.dart';
+import 'about_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final String? userId;
@@ -199,10 +200,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'About',
             subtitle: 'App version and information',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('TODO: Implement about page'),
-                  behavior: SnackBarBehavior.floating,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AboutScreen(),
                 ),
               );
             },
