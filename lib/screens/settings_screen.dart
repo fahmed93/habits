@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/theme_service.dart';
+import '../services/data_export_import_service.dart';
 import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -79,6 +80,148 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
       widget.onThemeChanged(selectedMode);
       await _themeService.setThemeMode(selectedMode);
+    }
+  }
+
+  Future<void> _exportData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Data'),
+        content: const Text(
+          'Export all your habits, settings, and preferences to a backup file. '
+          'You can share or save this file to restore your data later.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Export'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      // Show loading
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final exportService = DataExportImportService(userId: widget.userId);
+      await exportService.exportToFile();
+
+      // Close loading dialog
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      // Show success message
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data exported successfully!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      // Close loading dialog if still showing
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      // Show error message
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Export failed: $e'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  Future<void> _importData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Import Data'),
+        content: const Text(
+          'Import data from a backup file. This will replace your current '
+          'habits, settings, and preferences. Make sure to export your '
+          'current data first if you want to keep it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Import'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      // Show loading
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final importService = DataExportImportService(userId: widget.userId);
+      await importService.importFromFile();
+
+      // Close loading dialog
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      // Show success message and reload theme
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data imported successfully! Please restart the app to see all changes.'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 4),
+        ),
+      );
+
+      // Reload theme mode
+      await _loadThemeMode();
+      widget.onThemeChanged(_currentThemeMode);
+    } catch (e) {
+      // Close loading dialog if still showing
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      // Show error message
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Import failed: $e'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
@@ -174,18 +317,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 12),
           _buildSettingsCard(
             context,
-            icon: Icons.cloud_upload_rounded,
+            icon: Icons.upload_rounded,
             iconColor: Theme.of(context).colorScheme.primary,
-            title: 'Data Sync',
-            subtitle: 'Backup and sync your data',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('TODO: Implement data sync settings'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
+            title: 'Export Data',
+            subtitle: 'Save your data to a backup file',
+            onTap: _exportData,
+          ),
+          const SizedBox(height: 12),
+          _buildSettingsCard(
+            context,
+            icon: Icons.download_rounded,
+            iconColor: Theme.of(context).colorScheme.secondary,
+            title: 'Import Data',
+            subtitle: 'Restore data from a backup file',
+            onTap: _importData,
           ),
           const SizedBox(height: 32),
           
