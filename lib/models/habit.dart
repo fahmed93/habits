@@ -6,6 +6,7 @@ class Habit {
   final List<DateTime> completions;
   final int colorValue; // Store color as int for JSON serialization
   final String icon; // Emoji icon for the habit
+  final String? categoryId; // Optional category association
 
   // Predefined palette of habit colors
   static const List<int> habitColors = [
@@ -31,6 +32,7 @@ class Habit {
     required this.completions,
     this.colorValue = 0xFF6366F1, // Default to Indigo
     this.icon = '✓', // Default to checkmark
+    this.categoryId, // Optional category
   });
 
   // Convert a Habit to a Map for storage
@@ -43,6 +45,7 @@ class Habit {
       'completions': completions.map((date) => date.toIso8601String()).toList(),
       'colorValue': colorValue,
       'icon': icon,
+      'categoryId': categoryId,
     };
   }
 
@@ -58,6 +61,7 @@ class Habit {
           .toList(),
       colorValue: json['colorValue'] ?? 0xFF6366F1,
       icon: json['icon'] ?? '✓',
+      categoryId: json['categoryId'],
     );
   }
 
@@ -70,6 +74,7 @@ class Habit {
     List<DateTime>? completions,
     int? colorValue,
     String? icon,
+    String? categoryId,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -79,6 +84,7 @@ class Habit {
       completions: completions ?? this.completions,
       colorValue: colorValue ?? this.colorValue,
       icon: icon ?? this.icon,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 }

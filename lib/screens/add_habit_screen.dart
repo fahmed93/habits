@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
+import '../models/category.dart';
 import '../services/habit_storage.dart';
+import '../services/category_storage.dart';
 
 class AddHabitScreen extends StatefulWidget {
   final String userId;
@@ -16,14 +18,28 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   final _nameController = TextEditingController();
   final _iconController = TextEditingController();
   late final HabitStorage _storage;
+  late final CategoryStorage _categoryStorage;
   String _selectedInterval = 'daily';
   int _selectedColor = Habit.habitColors[0];
+  String? _selectedCategoryId;
+  List<Category> _categories = [];
+  bool _isLoadingCategories = true;
 
   @override
   void initState() {
     super.initState();
     _storage = HabitStorage(userId: widget.userId);
+    _categoryStorage = CategoryStorage(userId: widget.userId);
     _iconController.text = '✓';
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    final categories = await _categoryStorage.loadAllCategories();
+    setState(() {
+      _categories = categories;
+      _isLoadingCategories = false;
+    });
   }
 
   final List<Map<String, String>> _intervals = [
@@ -51,6 +67,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         icon: _iconController.text.trim().isEmpty 
             ? '✓' 
             : _iconController.text.trim(),
+        categoryId: _selectedCategoryId,
       );
 
       await _storage.addHabit(habit);
@@ -230,6 +247,63 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   }).toList(),
                 ),
               ),
+              const SizedBox(height: 32),
+              
+              // Category Selection
+              Text(
+                'Category (Optional)',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (_isLoadingCategories)
+                const Center(child: CircularProgressIndicator())
+              else
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    ),
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedCategoryId,
+                    decoration: const InputDecoration(
+                      hintText: 'Select a category',
+                      prefixIcon: Icon(Icons.category_rounded),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    items: [
+                      const DropdownMenuItem<String>(
+                        value: null,
+                        child: Text('None'),
+                      ),
+                      ..._categories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category.id,
+                          child: Row(
+                            children: [
+                              Text(
+                                category.icon,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(category.name),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategoryId = value;
+                      });
+                    },
+                  ),
+                ),
               const SizedBox(height: 32),
               
               // Color Selection
