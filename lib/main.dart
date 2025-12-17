@@ -55,6 +55,7 @@ class _HabitsAppState extends State<HabitsApp> {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
+        // ignore: prefer_const_constructors
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -111,6 +112,7 @@ class _HabitsAppState extends State<HabitsApp> {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
+        // ignore: prefer_const_constructors
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
