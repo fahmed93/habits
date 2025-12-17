@@ -191,7 +191,7 @@ class _HabitItemState extends State<HabitItem> {
             padding: const EdgeInsets.only(left: 24),
             decoration: BoxDecoration(
               color: Colors.blue.shade400,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.edit_rounded,
@@ -204,7 +204,7 @@ class _HabitItemState extends State<HabitItem> {
             padding: const EdgeInsets.only(right: 24),
             decoration: BoxDecoration(
               color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.delete_rounded,
@@ -256,7 +256,7 @@ class _HabitItemState extends State<HabitItem> {
           },
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
