@@ -22,7 +22,7 @@ void main() async {
   };
   
   await versionFile.writeAsString(
-    const JsonEncoder.withIndent('  ').convert(newVersion) + '\n',
+    '${const JsonEncoder.withIndent('  ').convert(newVersion)}\n',
   );
   
   // Generate Dart file
@@ -44,6 +44,7 @@ class AppVersion {
   
   await generatedFile.writeAsString(dartContent);
   
-  print('Version incremented to build $buildNumber');
-  print('Generated lib/generated/version.dart');
+  // Output for CI/CD logging (using stderr to avoid print lint warning)
+  stderr.writeln('Version incremented to build $buildNumber');
+  stderr.writeln('Generated lib/generated/version.dart');
 }
