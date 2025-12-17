@@ -75,9 +75,9 @@ You can check the deployment status:
 - Verify GitHub Pages is configured to serve from the `gh-pages` branch
 
 **Deployment fails:**
-- Check the workflow logs in the Actions tab
+- Check the workflow logs in the Actions tab for specific error messages
 - Ensure all tests pass (the test workflow runs on the same triggers)
-- Verify the Flutter version matches the one in the workflow
+- Verify the Flutter version in `.github/workflows/deploy-gh-pages.yml` (currently set to 3.38.4). If you need to update it, change the `flutter-version` field in both the deploy and test workflows
 
 **Firebase Authentication not working:**
 - Add your GitHub Pages domain to Firebase authorized domains
