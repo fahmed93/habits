@@ -348,26 +348,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 return [
                   // Category header
                   Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 12),
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
                     child: Row(
                       children: [
                         Text(
                           categoryIcon,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          categoryName,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                          style: const TextStyle(fontSize: 18),
                         ),
                         const SizedBox(width: 8),
                         Text(
+                          categoryName,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
                           '(${categoryHabits.length})',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
                           ),
                         ),
                       ],
