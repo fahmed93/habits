@@ -61,7 +61,7 @@ void main() {
       expect(find.text('💪'), findsOneWidget);
     });
 
-    testWidgets('HabitItem should display daily interval', (WidgetTester tester) async {
+    testWidgets('HabitItem should not display daily interval', (WidgetTester tester) async {
       final habit = Habit(
         id: '1',
         name: 'Exercise',
@@ -82,10 +82,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Daily'), findsOneWidget);
+      expect(find.text('Daily'), findsNothing);
     });
 
-    testWidgets('HabitItem should display weekly interval', (WidgetTester tester) async {
+    testWidgets('HabitItem should not display weekly interval', (WidgetTester tester) async {
       final habit = Habit(
         id: '1',
         name: 'Exercise',
@@ -106,10 +106,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Weekly'), findsOneWidget);
+      expect(find.text('Weekly'), findsNothing);
     });
 
-    testWidgets('HabitItem should display monthly interval', (WidgetTester tester) async {
+    testWidgets('HabitItem should not display monthly interval', (WidgetTester tester) async {
       final habit = Habit(
         id: '1',
         name: 'Exercise',
@@ -130,7 +130,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Monthly'), findsOneWidget);
+      expect(find.text('Monthly'), findsNothing);
     });
 
     testWidgets('HabitItem should display streak when habit has completions',

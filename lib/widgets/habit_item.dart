@@ -283,44 +283,44 @@ class _HabitItemState extends State<HabitItem> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left side: Icon, Name, and Interval
+                  // Left side: Icon and Name
                   Expanded(
                     flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Icon with gradient background
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(widget.habit.colorValue),
+                                Color(widget.habit.colorValue).withOpacity(0.7),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(widget.habit.colorValue).withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.habit.icon,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
-                            // Icon with gradient background
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(widget.habit.colorValue),
-                                    Color(widget.habit.colorValue).withOpacity(0.7),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(widget.habit.colorValue).withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  widget.habit.icon,
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
                             // Habit name
                             Expanded(
                               child: Text(
@@ -331,31 +331,6 @@ class _HabitItemState extends State<HabitItem> {
                                   decorationThickness: 2,
                                 ),
                                 overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            // Interval badge
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Color(widget.habit.colorValue).withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                _getIntervalDisplay(),
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(widget.habit.colorValue),
-                                  letterSpacing: 0.5,
-                                ),
                               ),
                             ),
                             // Streak badge
