@@ -93257,7 +93257,7 @@ if(r==null)r=n
 else{q=A.k(a).ax
 p=q.rx
 r=r.be(p==null?q.k3:p)}q=t.p
-r=A.ef(A.cK(A.b([l,B.cE,m,B.mw,A.aA("Version 1.0.0+3",n,n,n,r,n,n,n)],q),B.D,B.y,B.C,0,B.P),n,n)
+r=A.ef(A.cK(A.b([l,B.cE,m,B.mw,A.aA("Version 1.0.0+4",n,n,n,r,n,n,n)],q),B.D,B.y,B.C,0,B.P),n,n)
 m=o.z4(a,"A mobile habit tracker app built with Flutter and Firebase Authentication. Track your daily, weekly, and monthly habits to build better routines and achieve your goals.",B.pP,A.k(a).ax.b,"About This App")
 l=A.k(a).ax
 p=l.CW
@@ -95367,11 +95367,11 @@ r=s.k4
 s=r==null?s.k2:r}r=A.pv(b?A.az(m.a.c.f):B.x,2)
 if(k){q=A.az(m.a.c.f)
 q=A.b([new A.b5(0,B.H,A.Z(B.d.az(76.5),q.q()>>>16&255,q.q()>>>8&255,q.q()&255),B.cd,8)],t.V)}else q=l
-if(k)p=A.jb(B.pN,B.j,l,b?30:24)
-else{p=b?12:10
+if(k)p=A.jb(B.pN,B.j,l,b?24:20)
+else{p=b?10:9
 o=A.k(c).ax
 n=o.rx
-p=A.aA(j,l,l,l,A.dX(l,l,n==null?o.k3:n,l,l,l,l,l,l,l,l,p,l,l,B.ac,l,l,!0,l,l,l,l,l,l,l,l),l,l,l)}return A.hG(l,A.a2w(B.T,p,l,B.hI,new A.be(s,l,r,i,q,l,B.G),B.bV,52,52),B.aa,!1,l,l,l,l,l,l,l,l,l,l,l,l,l,l,l,l,new A.atc(m,a),l,l,l,l,l,l)},
+p=A.aA(j,l,l,l,A.dX(l,l,n==null?o.k3:n,l,l,l,l,l,l,l,l,p,l,l,B.ac,l,l,!0,l,l,l,l,l,l,l,l),l,l,l)}return A.hG(l,A.a2w(B.T,p,l,B.hI,new A.be(s,l,r,i,q,l,B.G),B.bV,40,40),B.aa,!1,l,l,l,l,l,l,l,l,l,l,l,l,l,l,l,l,new A.atc(m,a),l,l,l,l,l,l)},
 a8R(a,b){return A.abr(5,new A.atd(this,this.acE(a),a,b),!0,t.l7)},
 H(a0){var s,r,q,p,o,n,m,l,k,j,i,h,g=this,f=null,e=$.yA(),d=new A.bI(Date.now(),0,!1).e8(A.cw(0,e.a,0,0,0).a),c=A.dH(A.bv(d),A.bi(d),A.c2(d),0,0,0,0),b=g.ahd(),a=g.aco()
 e=A.az(g.a.c.f)
