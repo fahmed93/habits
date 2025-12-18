@@ -47,19 +47,6 @@ class _HabitItemState extends State<HabitItem> {
     });
   }
 
-  String _getIntervalDisplay() {
-    switch (widget.habit.interval) {
-      case 'daily':
-        return 'Daily';
-      case 'weekly':
-        return 'Weekly';
-      case 'monthly':
-        return 'Monthly';
-      default:
-        return widget.habit.interval;
-    }
-  }
-
   int _getCurrentStreak() {
     if (widget.habit.completions.isEmpty) return 0;
 
