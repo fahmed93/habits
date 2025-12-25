@@ -371,8 +371,30 @@ class _HabitItemState extends State<HabitItem> {
                   // Right side: 5-day completion view
                   Expanded(
                     flex: 5,
-                    child: Row(
-                      children: _buildDayIndicators(today, context),
+                    child: Stack(
+                      children: [
+                        // Day indicators
+                        Row(
+                          children: _buildDayIndicators(today, context),
+                        ),
+                        // Vertical dividers between columns
+                        Positioned.fill(
+                          child: Row(
+                            children: List.generate(4, (i) {
+                              return Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    width: 1,
+                                    height: double.infinity,
+                                    color: Theme.of(context).dividerColor.withOpacity(0.3),
+                                  ),
+                                ),
+                              );
+                            })..add(const Expanded(child: SizedBox())), // Last column has no divider
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

@@ -213,29 +213,51 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             flex: 5,
             child: Container(
               padding: const EdgeInsets.only(right: 20),
-              child: Row(
-                children: List.generate(dates.length, (i) {
-                  final date = dates[i];
-                  final isToday = date.year == today.year &&
-                                 date.month == today.month &&
-                                 date.day == today.day;
-                  return Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        dateFormat.format(date),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
-                          color: isToday 
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.onSurfaceVariant,
+              child: Stack(
+                children: [
+                  // Date labels
+                  Row(
+                    children: List.generate(dates.length, (i) {
+                      final date = dates[i];
+                      final isToday = date.year == today.year &&
+                                     date.month == today.month &&
+                                     date.day == today.day;
+                      return Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            dateFormat.format(date),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                              color: isToday 
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                         ),
-                      ),
+                      );
+                    }),
+                  ),
+                  // Vertical dividers between columns
+                  Positioned.fill(
+                    child: Row(
+                      children: List.generate(dates.length - 1, (i) {
+                        return Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              width: 1,
+                              height: double.infinity,
+                              color: Theme.of(context).dividerColor.withOpacity(0.3),
+                            ),
+                          ),
+                        );
+                      })..add(const Expanded(child: SizedBox())), // Last column has no divider
                     ),
-                  );
-                }),
+                  ),
+                ],
               ),
             ),
           ),

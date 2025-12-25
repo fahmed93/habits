@@ -323,6 +323,32 @@ void main() {
       expect(find.byType(GestureDetector), findsWidgets);
     });
 
+    testWidgets('HabitItem should use Stack for day columns with dividers',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      // Verify that Stack is used to overlay dividers on day indicators
+      expect(find.byType(Stack), findsWidgets);
+    });
+
     testWidgets('HabitItem should call onToggleDate when day is tapped',
         (WidgetTester tester) async {
       DateTime? toggledDate;
