@@ -197,7 +197,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final dateFormat = DateFormat('M/d');
     
     return Container(
-      color: Theme.of(context).colorScheme.surface,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).dividerColor,
+            width: 1.0,
+          ),
+        ),
+      ),
       margin: const EdgeInsets.symmetric(horizontal: 16), // Match Card margin
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12), // Match Card inner padding
       child: Row(
