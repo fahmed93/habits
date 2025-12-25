@@ -521,5 +521,61 @@ void main() {
       expect(find.byType(HabitItem), findsOneWidget);
       expect(find.text('Exercise'), findsOneWidget);
     });
+
+    testWidgets('HabitItem should use OverflowBox for continuous dividers',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      // Verify that OverflowBox is used to allow dividers to extend beyond item bounds
+      expect(find.byType(OverflowBox), findsOneWidget);
+    });
+
+    testWidgets('HabitItem should have zero vertical margin for connected dividers',
+        (WidgetTester tester) async {
+      final habit = Habit(
+        id: '1',
+        name: 'Exercise',
+        interval: 'daily',
+        createdAt: DateTime.now(),
+        completions: [],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitItem(
+              habit: habit,
+              onToggle: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      // Find the Card widget and check its margin
+      final cardFinder = find.byType(Card);
+      expect(cardFinder, findsOneWidget);
+      
+      final card = tester.widget<Card>(cardFinder);
+      expect(card.margin, const EdgeInsets.symmetric(horizontal: 16, vertical: 0));
+    });
   });
 }
