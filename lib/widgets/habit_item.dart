@@ -389,7 +389,8 @@ class _HabitItemState extends State<HabitItem> {
                                     alignment: Alignment.centerRight,
                                     child: Container(
                                       width: 1,
-                                      height: 1000, // Tall enough to connect between items
+                                      // Use screen height * 3 to ensure dividers connect even on tall screens
+                                      height: MediaQuery.of(context).size.height * 3,
                                       color: Theme.of(context).dividerColor.withOpacity(0.3),
                                     ),
                                   ),

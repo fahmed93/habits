@@ -34,7 +34,8 @@ Positioned.fill(
             alignment: Alignment.centerRight,
             child: Container(
               width: 1,
-              height: 1000, // Tall enough to connect between items
+              // Use screen height * 3 to ensure dividers connect even on tall screens
+              height: MediaQuery.of(context).size.height * 3,
               color: Theme.of(context).dividerColor.withOpacity(0.3),
             ),
           ),
@@ -45,7 +46,7 @@ Positioned.fill(
 ),
 ```
 
-The `OverflowBox` with `maxHeight: double.infinity` allows its child to exceed the Stack's height constraints. The divider height is set to 1000 pixels, which is tall enough to span multiple habit items and create a continuous vertical line effect.
+The `OverflowBox` with `maxHeight: double.infinity` allows its child to exceed the Stack's height constraints. The divider height is set dynamically to 3× the screen height, which adapts to different device sizes and ensures continuous lines across multiple habit items.
 
 ## Visual Impact
 - Vertical dividers now create continuous lines that visually connect the day columns across all habit items
