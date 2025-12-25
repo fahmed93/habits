@@ -176,12 +176,13 @@ class _HabitItemState extends State<HabitItem> {
     final streak = _getCurrentStreak();
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       elevation: 1,
       shadowColor: Color(widget.habit.colorValue).withOpacity(0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
+      clipBehavior: Clip.none,
       child: Dismissible(
           key: Key(widget.habit.id),
           direction: DismissDirection.horizontal,
@@ -379,19 +380,22 @@ class _HabitItemState extends State<HabitItem> {
                         ),
                         // Vertical dividers between columns
                         Positioned.fill(
-                          child: Row(
-                            children: List.generate(4, (i) {
-                              return Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                    width: 1,
-                                    height: double.infinity,
-                                    color: Theme.of(context).dividerColor.withOpacity(0.3),
+                          child: OverflowBox(
+                            maxHeight: double.infinity,
+                            child: Row(
+                              children: List.generate(4, (i) {
+                                return Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Container(
+                                      width: 1,
+                                      height: 1000, // Tall enough to connect between items
+                                      color: Theme.of(context).dividerColor.withOpacity(0.3),
+                                    ),
                                   ),
-                                ),
-                              );
-                            })..add(const Expanded(child: SizedBox())), // Last column has no divider
+                                );
+                              })..add(const Expanded(child: SizedBox())), // Last column has no divider
+                            ),
                           ),
                         ),
                       ],
